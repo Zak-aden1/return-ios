@@ -4,9 +4,13 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ChecklistSection: View {
     var onMyWhyTap: () -> Void = {}
+
+    // Telegram community link
+    private let communityURL = "https://t.me/+OlG8JBruJMYxN2E0"
 
     @State private var notificationsEnabled = false
     @State private var communityJoined = false
@@ -74,7 +78,9 @@ struct ChecklistSection: View {
                         withAnimation(.spring(response: 0.3)) {
                             communityJoined = true
                         }
-                        // TODO: Navigate to community
+                        if let url = URL(string: communityURL) {
+                            UIApplication.shared.open(url)
+                        }
                     }
 
                     Divider()

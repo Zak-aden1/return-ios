@@ -5,8 +5,11 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct HomeView: View {
+    // Telegram community link
+    private let communityURL = "https://t.me/+OlG8JBruJMYxN2E0"
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Query private var journalEntries: [JournalEntry]
@@ -78,6 +81,11 @@ struct HomeView: View {
                     QuickActionsSection(
                         onCheckInTap: { showCheckIn = true },
                         onProgressTap: { showProgressPage = true },
+                        onCommunityTap: {
+                            if let url = URL(string: communityURL) {
+                                UIApplication.shared.open(url)
+                            }
+                        },
                         onChatTap: { showStreakCoach = true }
                     )
                     .padding(.horizontal, 24)
