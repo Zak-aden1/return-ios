@@ -12,28 +12,9 @@ struct HeaderView: View {
     private let primaryGreen = Color(hex: "74B886")
 
     var body: some View {
-        HStack {
-            // Logo
-            HStack(spacing: 8) {
-                ZStack {
-                    Circle()
-                        .fill(primaryGreen.opacity(0.2))
-                        .frame(width: 32, height: 32)
-                    Image(systemName: "moon.stars.fill")
-                        .font(.system(size: 14))
-                        .foregroundColor(primaryGreen)
-                }
-
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Tazkiyah")
-                        .font(.system(size: 18, weight: .bold, design: .serif))
-                        .foregroundColor(.white)
-                    Text("PURIFICATION")
-                        .font(.system(size: 9, weight: .semibold))
-                        .tracking(1.5)
-                        .foregroundColor(Color(hex: "94A3B8"))
-                }
-            }
+        HStack(alignment: .center) {
+            // Logo - RETURN with diagonal slash
+            ReturnLogo()
 
             Spacer()
 
@@ -77,8 +58,27 @@ struct HeaderView: View {
     }
 }
 
+// MARK: - Return Logo
+
+struct ReturnLogo: View {
+    var body: some View {
+        Image("ReturnLogo")
+            .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 36)
+            .foregroundColor(.white)
+    }
+}
+
 #Preview {
     HeaderView(streakBadge: 12)
         .padding()
+        .background(Color(hex: "0A1628"))
+}
+
+#Preview("Logo Only") {
+    ReturnLogo()
+        .padding(40)
         .background(Color(hex: "0A1628"))
 }
