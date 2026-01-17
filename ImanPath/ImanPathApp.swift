@@ -38,8 +38,30 @@ struct ReturnApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
                 .modelContainer(container)
+        }
+    }
+}
+
+// MARK: - Root View (Splash -> Content)
+
+struct RootView: View {
+    @State private var showSplash = true
+
+    var body: some View {
+        ZStack {
+            if showSplash {
+                SplashScreen(onComplete: {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showSplash = false
+                    }
+                })
+                .transition(.opacity)
+            } else {
+                ContentView()
+                    .transition(.opacity)
+            }
         }
     }
 }
