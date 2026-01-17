@@ -10,6 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var users: [User]
     @StateObject private var subscriptionManager = SubscriptionManager.shared
 
@@ -80,6 +81,15 @@ struct ContentView: View {
             // Reset paywall flow state when subscription status changes
             if isSubscribed {
                 showPaywallScreen = false
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            // Refresh subscription status when app returns to foreground
+            // Catches expired subscriptions that occurred while backgrounded
+            if newPhase == .active {
+                Task {
+                    await subscriptionManager.updateSubscriptionStatus()
+                }
             }
         }
     }
