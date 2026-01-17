@@ -85,11 +85,16 @@ struct WelcomeScreen: View {
                     .opacity(showContent ? 1 : 0)
                     .animation(.easeOut(duration: 0.5).delay(0.4), value: showContent)
 
-                // App name - Hero text
-                Text("Return")
-                    .font(.system(size: 52, weight: .bold, design: .serif))
+                Spacer().frame(height: 8)
+
+                // App logo
+                Image("ReturnLogo")
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 55)
                     .foregroundColor(textPrimary)
-                    .shadow(color: sunriseGlow.opacity(0.3), radius: 10, x: 0, y: 2)
+                    .shadow(color: sunriseGlow.opacity(0.4), radius: 15, x: 0, y: 4)
                     .opacity(showContent ? 1 : 0)
                     .offset(y: showContent ? 0 : 20)
                     .animation(.easeOut(duration: 0.6).delay(0.5), value: showContent)
