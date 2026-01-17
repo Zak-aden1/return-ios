@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home Screen Variant A - Integrated Actions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#74B886", // Muted Sage Green
+                        "primary-dark": "#5a966a",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#050810", // Very Deep space black/blue
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#131C2D", // Dark blue-grey for cards
+                        "card-accent": "#1A2639",
+                        "panic": "#DC2626",
+                    },
+                    fontFamily: {
+                        sans: ["'DM Sans'", "sans-serif"],
+                        display: ["'Playfair Display'", "serif"],
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px -5px rgba(116, 184, 134, 0.3)', // Green glow
+                        'panic-glow': '0 4px 20px -5px rgba(220, 38, 38, 0.5)',
+                        'action-card': '0 4px 20px -5px rgba(0, 0, 0, 0.4)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>
+        .space-bg {
+            background-color: #050810;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 1.5px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 1.5px),
+                radial-gradient(white, rgba(255,255,255,.1) 1.5px, transparent 2px),
+                radial-gradient(rgba(116, 184, 134, 0.1), rgba(116, 184, 134, 0.05) 40%, transparent 60%);
+            background-size: 250px 250px, 150px 150px, 350px 350px, 100% 100%;
+            background-position: 0 0, 40px 60px, 130px 270px, center center;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-900 font-sans min-h-screen flex items-center justify-center p-0 sm:p-4 selection:bg-primary selection:text-white">
+<div class="w-full max-w-[400px] h-[860px] bg-background-dark text-white relative overflow-hidden shadow-2xl sm:rounded-[40px] flex flex-col space-bg">
+<div class="h-12 w-full flex justify-between items-center px-6 pt-2 z-20">
+<span class="text-sm font-semibold text-white">12:46</span>
+<div class="flex items-center space-x-2">
+<span class="material-icons-round text-sm text-white">signal_cellular_alt</span>
+<span class="material-icons-round text-sm text-white">wifi</span>
+<span class="material-icons-round text-sm text-white">battery_full</span>
+</div>
+</div>
+<div class="flex justify-between items-center px-6 py-4 z-10">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons-round text-sm">mosque</span>
+</div>
+<div>
+<h1 class="font-display font-bold text-lg leading-tight text-white">Tazkiyah</h1>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Purification</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+<span class="material-icons-round text-primary text-sm">local_fire_department</span>
+<span class="text-xs font-bold text-primary">12</span>
+</div>
+<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-slate-700">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlTvXSbAcN0dHjwmArPdhWReO8-XA7bAzsJuEwqSxvD4Q1FdQThXy2lTXfqdeXgfz9rYtlHDdb07I4_N2xctVePkeLENj8xukuAXX2dYt5kdjlzmVORBcHjdjMJ7ZFDbiCWBzPiLK6OyD3WF_G3e9Q1lUf0SHHrG1qwMYWCfJTGkEOG5QLI0r8_bE01L_UfSN44F4fMzxU_7dd5QZ-QeTKKXqHK1AWkng98MJp2w6KZhIe8lSydpb9jLsi9vpd24svm0_A9PvX24pm"/>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar pb-32 relative z-10">
+<div class="flex flex-col items-center justify-center mt-4 mb-8 px-6">
+<p class="text-sm font-medium text-slate-400 mb-1">You have been clean for</p>
+<div class="relative">
+<h2 class="font-display text-[72px] leading-none text-white drop-shadow-sm">86</h2>
+<span class="absolute -right-4 top-2 text-primary text-xl">✨</span>
+</div>
+<h3 class="font-display text-3xl text-slate-200 mb-4">Days</h3>
+<div class="bg-card-dark/50 backdrop-blur-md border border-slate-700 px-4 py-1.5 rounded-full shadow-sm mb-6">
+<span class="text-xs font-mono text-slate-300 tracking-wide">16h 46m 45s</span>
+</div>
+<div class="grid grid-cols-2 gap-3 w-full">
+<div class="bg-card-dark/40 p-3 rounded-2xl border border-slate-700/50 flex flex-col items-center backdrop-blur-sm">
+<span class="text-[10px] text-slate-400 uppercase tracking-wide mb-1">Porn Free For</span>
+<span class="text-base font-bold text-white">3m 12d</span>
+</div>
+<div class="bg-card-dark/40 p-3 rounded-2xl border border-slate-700/50 flex flex-col items-center backdrop-blur-sm">
+<span class="text-[10px] text-slate-400 uppercase tracking-wide mb-1">Til Commitment</span>
+<span class="text-base font-bold text-primary">90 Days</span>
+</div>
+</div>
+</div>
+<div class="px-6 mb-8">
+<div class="w-full bg-gradient-to-r from-slate-800 to-slate-900 rounded-3xl p-5 border border-slate-700/60 shadow-action-card relative overflow-hidden group">
+<div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/10 to-transparent"></div>
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/20 blur-2xl rounded-full"></div>
+<div class="relative z-10 flex items-center justify-between">
+<div class="flex-1">
+<h3 class="text-lg font-bold text-white mb-1">Daily Preparation</h3>
+<p class="text-xs text-slate-400 mb-4 pr-4">Complete your morning routine to stay focused today.</p>
+<button class="bg-primary hover:bg-primary-dark text-white text-sm font-semibold py-2 px-5 rounded-full transition-colors flex items-center gap-2">
+                    Start Now
+                    <span class="material-icons-round text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="w-14 h-14 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-icons-round text-primary text-2xl">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 mb-8">
+<h4 class="text-sm font-semibold text-white mb-4 pl-1">Quick Actions</h4>
+<div class="flex justify-between items-start">
+<button class="group flex flex-col items-center gap-2 w-1/4">
+<div class="w-14 h-14 rounded-full bg-card-dark shadow-lg border border-slate-700 flex items-center justify-center group-active:scale-95 transition-all relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-icons-round text-slate-300 text-2xl group-hover:text-primary transition-colors">edit_calendar</span>
+</div>
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Check-ins</span>
+</button>
+<button class="group flex flex-col items-center gap-2 w-1/4">
+<div class="w-14 h-14 rounded-full bg-card-dark shadow-lg border border-slate-700 flex items-center justify-center group-active:scale-95 transition-all relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-icons-round text-slate-300 text-2xl group-hover:text-primary transition-colors">trending_up</span>
+</div>
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Progress</span>
+</button>
+<button class="group flex flex-col items-center gap-2 w-1/4">
+<div class="w-14 h-14 rounded-full bg-card-dark shadow-lg border border-slate-700 flex items-center justify-center group-active:scale-95 transition-all relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-icons-round text-slate-300 text-2xl group-hover:text-primary transition-colors">diversity_3</span>
+</div>
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Community</span>
+</button>
+<button class="group flex flex-col items-center gap-2 w-1/4">
+<div class="w-14 h-14 rounded-full bg-card-dark shadow-lg border border-slate-700 flex items-center justify-center group-active:scale-95 transition-all relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-icons-round text-slate-300 text-2xl group-hover:text-primary transition-colors">chat_bubble</span>
+</div>
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Chat</span>
+</button>
+</div>
+</div>
+<div class="px-6 mb-6">
+<div class="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-3xl border border-slate-700 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-bl-full -mr-4 -mt-4"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-1 rounded">DAILY VERSE</span>
+</div>
+<p class="font-display text-lg italic text-slate-200 mb-2">"Indeed, with hardship comes ease."</p>
+<p class="text-xs text-slate-400 text-right">— Quran 94:6</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-[90px] left-0 right-0 px-6 z-20">
+<button class="w-full bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-bold py-4 px-6 rounded-2xl shadow-panic-glow flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
+<span class="material-icons-round animate-pulse">warning</span>
+<span>PANIC BUTTON</span>
+</button>
+</div>
+<div class="absolute bottom-0 w-full bg-background-dark/95 backdrop-blur-lg border-t border-slate-800 py-4 px-6 pb-8 z-30">
+<div class="flex justify-between items-center">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-icons-round">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors">
+<span class="material-icons-round">insights</span>
+<span class="text-[10px] font-medium">Analytics</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors">
+<span class="material-icons-round">library_books</span>
+<span class="text-[10px] font-medium">Library</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors">
+<span class="material-icons-round">group</span>
+<span class="text-[10px] font-medium">Community</span>
+</button>
+</div>
+</div>
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-primary/10 blur-[100px] rounded-full pointer-events-none opacity-50"></div>
+<div class="absolute bottom-[20%] right-[-10%] w-[40%] h-[30%] bg-blue-900/20 blur-[80px] rounded-full pointer-events-none opacity-40"></div>
+</div>
+</body></html>

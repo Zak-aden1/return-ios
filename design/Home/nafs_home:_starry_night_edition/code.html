@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nafs: Starry Night Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4d805e",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0B132B", // Deep Indigo-Black
+                        "surface-dark": "#1F2A40",    // Dark Slate Blue
+                        "text-light": "#E0E7EB",      // Luminous Blue-Grey
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    boxShadow: {
+                        "glow": "0 0 20px rgba(77, 128, 94, 0.4)",
+                        "glow-sm": "0 0 10px rgba(77, 128, 94, 0.3)",
+                    },
+                    animation: {
+                        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Starry Background */
+        .starry-bg {
+            background-color: #0B132B;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 160px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
+        
+        .nebula-glow {
+            background: radial-gradient(circle at center, rgba(31, 42, 64, 0.4) 0%, rgba(11, 19, 43, 0) 70%);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 25px rgba(77, 128, 94, 0.6);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-text-light font-display antialiased selection:bg-primary/30">
+<div class="relative min-h-screen w-full flex flex-col overflow-x-hidden starry-bg">
+<!-- Ambient Background Glows -->
+<div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[50vh] bg-primary/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
+<div class="fixed bottom-0 left-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full pointer-events-none z-0"></div>
+<!-- Main Content Wrapper -->
+<div class="relative z-10 flex-1 flex flex-col pb-24">
+<!-- Top Bar -->
+<div class="flex items-center justify-between p-6 pt-8">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full border border-surface-dark bg-surface-dark bg-cover bg-center shadow-lg" data-alt="User profile abstract avatar gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdK525wR8C-UASGdmDdhHoWvOq_1MTuOfR6JLKPFsxYyDdx6C4PrN-GF1GyieH4fN6mvoaaVsNKMFviu18w2KOELUroEP3BuB7ceR8-AFHnIr1rTmYtsCpUbZTYdHk86Kd9ResGoDtdz7iDkIyAVDPME-Y7g-tihCkHere2QBdxKpYCb1D8w-R4wq3xhVah-BX8nqe0fvxvzifbDFSxhVqHMCq3ZpzivYBrRcCKHvraoLIVwAcREGZZHakvaYVi4K_SxReJwd_2m4l");'></div>
+<span class="text-sm font-medium opacity-80">As-salamu alaykum</span>
+</div>
+<button class="relative flex items-center justify-center size-10 rounded-full bg-surface-dark/50 border border-white/5 text-white hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2.5 size-2 bg-primary rounded-full shadow-glow-sm"></span>
+</button>
+</div>
+<!-- Hero Section: Streak -->
+<div class="flex flex-col items-center justify-center mt-4 mb-8 px-6 text-center">
+<div class="relative mb-2">
+<h1 class="text-[64px] font-extrabold leading-tight text-white tracking-tight text-glow">Day 86</h1>
+</div>
+<h2 class="text-lg font-medium text-text-light/80 mb-8">You are on the right path</h2>
+<!-- Progress Horizon -->
+<div class="w-full max-w-xs relative group">
+<div class="flex justify-between text-xs font-medium text-primary mb-2 uppercase tracking-wider opacity-80">
+<span>Current</span>
+<span>90 Days Goal</span>
+</div>
+<!-- The "Line Thing" -->
+<div class="h-1.5 w-full bg-surface-dark rounded-full overflow-visible relative">
+<!-- Glow Line -->
+<div class="absolute left-0 top-0 h-full bg-primary rounded-full shadow-glow" style="width: 85%;"></div>
+<!-- Pointer Orb -->
+<div class="absolute top-1/2 -translate-y-1/2 size-4 bg-white border-2 border-primary rounded-full shadow-glow z-10" style="left: 85%;"></div>
+</div>
+<p class="text-xs text-text-light/40 mt-3 font-normal">85% completed. Keep striving.</p>
+</div>
+</div>
+<!-- Quick Action Orbit -->
+<div class="grid grid-cols-4 gap-4 px-6 mb-10 w-full max-w-sm mx-auto">
+<!-- Action 1 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-full bg-surface-dark border border-white/5 flex items-center justify-center text-primary shadow-lg group-hover:scale-105 group-hover:shadow-glow-sm transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">edit_calendar</span>
+</div>
+<span class="text-xs font-medium text-text-light/70 group-hover:text-white">Check-in</span>
+</button>
+<!-- Action 2 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-full bg-surface-dark border border-white/5 flex items-center justify-center text-primary shadow-lg group-hover:scale-105 group-hover:shadow-glow-sm transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">monitoring</span>
+</div>
+<span class="text-xs font-medium text-text-light/70 group-hover:text-white">Progress</span>
+</button>
+<!-- Action 3 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-full bg-surface-dark border border-white/5 flex items-center justify-center text-primary shadow-lg group-hover:scale-105 group-hover:shadow-glow-sm transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">diversity_3</span>
+</div>
+<span class="text-xs font-medium text-text-light/70 group-hover:text-white">Tribe</span>
+</button>
+<!-- Action 4 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-full bg-surface-dark border border-white/5 flex items-center justify-center text-primary shadow-lg group-hover:scale-105 group-hover:shadow-glow-sm transition-all duration-300">
+<span class="material-symbols-outlined text-[24px]">smart_toy</span>
+</div>
+<span class="text-xs font-medium text-text-light/70 group-hover:text-white">Guide</span>
+</button>
+</div>
+<!-- Daily Preparation Card -->
+<div class="px-6 mb-4">
+<div class="relative overflow-hidden rounded-xl bg-surface-dark border border-white/5 p-5 group hover:border-primary/30 transition-colors cursor-pointer">
+<!-- Subtle inner gradient -->
+<div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-primary/20 text-primary p-1 rounded-md">
+<span class="material-symbols-outlined text-[18px] block">light_mode</span>
+</span>
+<span class="text-xs font-bold uppercase tracking-wider text-primary">Daily Preparation</span>
+</div>
+<h3 class="text-lg font-bold text-white mb-1">Set Your Intentions</h3>
+<p class="text-sm text-text-light/60">Begin your day with clarity and spiritual focus.</p>
+</div>
+<div class="flex items-center justify-center size-8 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-white text-text-light transition-all">
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Daily Verse -->
+<div class="px-6 mb-8">
+<div class="rounded-xl bg-[#151e32] border border-white/5 p-6 relative">
+<span class="absolute top-4 right-4 text-white/10 material-symbols-outlined text-[40px]">format_quote</span>
+<h4 class="text-xs font-bold text-text-light/40 uppercase tracking-widest mb-3">Daily Verse</h4>
+<p class="text-base text-text-light font-medium leading-relaxed italic mb-3">"Verily, with hardship comes ease."</p>
+<p class="text-sm text-primary font-bold">Quran 94:6</p>
+</div>
+</div>
+<!-- SOS Panic Button -->
+<div class="px-6 mt-auto">
+<button class="w-full group relative overflow-hidden rounded-lg bg-transparent border border-primary/30 p-4 transition-all active:scale-[0.98]">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<div class="relative flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-primary text-[24px] group-hover:scale-110 transition-transform">support_agent</span>
+<span class="text-base font-bold text-primary tracking-wide">SOS Support</span>
+</div>
+</button>
+<p class="text-center text-[10px] text-text-light/30 mt-3">Immediate help for difficult moments</p>
+</div>
+</div>
+<!-- Bottom Navigation (Glassmorphism) -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+<!-- Blur Backdrop -->
+<div class="absolute inset-0 bg-[#0B132B]/80 backdrop-blur-md border-t border-white/5"></div>
+<div class="relative flex justify-around items-center h-20 px-2 pb-2">
+<button class="flex flex-col items-center justify-center w-16 gap-1 text-primary">
+<span class="material-symbols-outlined text-[26px] fill-current">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 gap-1 text-text-light/50 hover:text-text-light transition-colors">
+<span class="material-symbols-outlined text-[26px]">explore</span>
+<span class="text-[10px] font-medium">Discover</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 gap-1 text-text-light/50 hover:text-text-light transition-colors">
+<span class="material-symbols-outlined text-[26px]">forum</span>
+<span class="text-[10px] font-medium">Community</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 gap-1 text-text-light/50 hover:text-text-light transition-colors">
+<span class="material-symbols-outlined text-[26px]">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>
