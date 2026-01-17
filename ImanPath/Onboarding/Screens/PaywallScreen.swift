@@ -1,6 +1,6 @@
 //
 //  PaywallScreen.swift
-//  ImanPath
+//  Return
 //
 //  Onboarding Step 31: Subscription paywall
 //  Final step - pricing and subscription options
@@ -14,9 +14,12 @@ struct PaywallScreen: View {
     var onSubscribe: () -> Void
     var onRestorePurchases: () -> Void
 
-    @State private var selectedPlan: SubscriptionPlan = .yearly
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @State private var selectedProductID: String?
     @State private var showContent: Bool = false
     @State private var isPurchasing: Bool = false
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
 
     // Colors - Fajr Dawn palette
     private let bgTop = Color(hex: "FDF8F5")
@@ -37,11 +40,6 @@ struct PaywallScreen: View {
 
     // Badge color
     private let badgeGreen = Color(hex: "10B981")
-
-    enum SubscriptionPlan {
-        case yearly
-        case monthly
-    }
 
     var body: some View {
         ZStack {
@@ -108,7 +106,7 @@ struct PaywallScreen: View {
                         FeatureRow(icon: "checkmark.circle.fill", text: "Daily Islamic guidance & reminders")
                         FeatureRow(icon: "checkmark.circle.fill", text: "Emergency panic button")
                         FeatureRow(icon: "checkmark.circle.fill", text: "Progress tracking & streaks")
-                        FeatureRow(icon: "checkmark.circle.fill", text: "Community accountability")
+                        FeatureRow(icon: "checkmark.circle.fill", text: "AI-powered coach support")
                     }
                     .padding(.horizontal, 32)
                     .opacity(showContent ? 1 : 0)
@@ -117,48 +115,36 @@ struct PaywallScreen: View {
 
                     Spacer().frame(height: 32)
 
-                    // Pricing cards
+                    // Pricing cards - Dynamic from StoreKit
                     VStack(spacing: 12) {
-                        // Yearly plan (recommended)
-                        PricingCard(
-                            title: "Yearly",
-                            price: "$49.99",
-                            period: "/year",
-                            subtext: "Just $4.17/month",
-                            badge: "SAVE 58%",
-                            isSelected: selectedPlan == .yearly,
-                            selectedBorder: selectedBorder,
-                            unselectedBorder: unselectedBorder,
-                            badgeColor: badgeGreen,
-                            textHeading: textHeading,
-                            textBody: textBody,
-                            textMuted: textMuted
-                        ) {
-                            withAnimation(.spring(response: 0.3)) {
-                                selectedPlan = .yearly
+                        if subscriptionManager.isLoading && subscriptionManager.products.isEmpty {
+                            ProgressView()
+                                .padding(.vertical, 40)
+                        } else if subscriptionManager.products.isEmpty {
+                            // Fallback if products fail to load
+                            Text("Unable to load subscription options")
+                                .font(.system(size: 15))
+                                .foregroundColor(textMuted)
+                                .padding(.vertical, 40)
+                        } else {
+                            // Show products in order: yearly first (best value), then monthly, then weekly
+                            ForEach(subscriptionManager.products.reversed(), id: \.id) { product in
+                                ProductCard(
+                                    product: product,
+                                    isSelected: selectedProductID == product.id,
+                                    selectedBorder: selectedBorder,
+                                    unselectedBorder: unselectedBorder,
+                                    badgeColor: badgeGreen,
+                                    textHeading: textHeading,
+                                    textBody: textBody,
+                                    textMuted: textMuted
+                                ) {
+                                    withAnimation(.spring(response: 0.3)) {
+                                        selectedProductID = product.id
+                                    }
+                                    triggerHaptic(.light)
+                                }
                             }
-                            triggerHaptic(.light)
-                        }
-
-                        // Monthly plan
-                        PricingCard(
-                            title: "Monthly",
-                            price: "$9.99",
-                            period: "/month",
-                            subtext: nil,
-                            badge: nil,
-                            isSelected: selectedPlan == .monthly,
-                            selectedBorder: selectedBorder,
-                            unselectedBorder: unselectedBorder,
-                            badgeColor: badgeGreen,
-                            textHeading: textHeading,
-                            textBody: textBody,
-                            textMuted: textMuted
-                        ) {
-                            withAnimation(.spring(response: 0.3)) {
-                                selectedPlan = .monthly
-                            }
-                            triggerHaptic(.light)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -185,12 +171,8 @@ struct PaywallScreen: View {
 
                     // Subscribe button
                     Button(action: {
-                        triggerHaptic(.medium)
-                        isPurchasing = true
-                        // TODO: Implement actual StoreKit purchase
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            isPurchasing = false
-                            onSubscribe()
+                        Task {
+                            await purchaseSelectedProduct()
                         }
                     }) {
                         HStack(spacing: 8) {
@@ -215,7 +197,8 @@ struct PaywallScreen: View {
                                 .shadow(color: accentViolet.opacity(0.4), radius: 16, x: 0, y: 8)
                         )
                     }
-                    .disabled(isPurchasing)
+                    .disabled(isPurchasing || selectedProductID == nil)
+                    .opacity(selectedProductID == nil ? 0.6 : 1)
                     .padding(.horizontal, 24)
                     .opacity(showContent ? 1 : 0)
                     .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
@@ -240,7 +223,12 @@ struct PaywallScreen: View {
                     VStack(spacing: 12) {
                         Button(action: {
                             triggerHaptic(.light)
-                            onRestorePurchases()
+                            Task {
+                                await subscriptionManager.restorePurchases()
+                                if subscriptionManager.isSubscribed {
+                                    onRestorePurchases()
+                                }
+                            }
                         }) {
                             Text("Restore Purchases")
                                 .font(.system(size: 14, weight: .medium))
@@ -249,7 +237,9 @@ struct PaywallScreen: View {
 
                         HStack(spacing: 16) {
                             Button(action: {
-                                // TODO: Open terms
+                                if let url = URL(string: "https://zakaden.com/return/terms") {
+                                    UIApplication.shared.open(url)
+                                }
                             }) {
                                 Text("Terms of Use")
                                     .font(.system(size: 13))
@@ -261,7 +251,9 @@ struct PaywallScreen: View {
                                 .foregroundColor(textMuted)
 
                             Button(action: {
-                                // TODO: Open privacy policy
+                                if let url = URL(string: "https://zakaden.com/return/privacy") {
+                                    UIApplication.shared.open(url)
+                                }
                             }) {
                                 Text("Privacy Policy")
                                     .font(.system(size: 13))
@@ -280,12 +272,56 @@ struct PaywallScreen: View {
             withAnimation {
                 showContent = true
             }
+            // Select yearly by default
+            if selectedProductID == nil, let yearlyProduct = subscriptionManager.product(for: .yearly) {
+                selectedProductID = yearlyProduct.id
+            }
+        }
+        .onChange(of: subscriptionManager.products) { _, products in
+            // Select yearly by default when products load
+            if selectedProductID == nil, let yearlyProduct = products.first(where: { $0.id == SubscriptionManager.ProductID.yearly.rawValue }) {
+                selectedProductID = yearlyProduct.id
+            }
+        }
+        .alert("Purchase Error", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+
+    private func purchaseSelectedProduct() async {
+        guard let productID = selectedProductID,
+              let product = subscriptionManager.products.first(where: { $0.id == productID }) else {
+            return
+        }
+
+        isPurchasing = true
+        triggerHaptic(.medium)
+
+        do {
+            let success = try await subscriptionManager.purchase(product)
+            isPurchasing = false
+
+            if success {
+                triggerHaptic(.success)
+                onSubscribe()
+            }
+        } catch {
+            isPurchasing = false
+            errorMessage = error.localizedDescription
+            showError = true
         }
     }
 
     private func triggerHaptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let generator = UIImpactFeedbackGenerator(style: style)
         generator.impactOccurred()
+    }
+
+    private func triggerHaptic(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(type)
     }
 }
 
@@ -312,13 +348,9 @@ private struct FeatureRow: View {
     }
 }
 
-// MARK: - Pricing Card
-private struct PricingCard: View {
-    let title: String
-    let price: String
-    let period: String
-    let subtext: String?
-    let badge: String?
+// MARK: - Product Card (Dynamic from StoreKit)
+private struct ProductCard: View {
+    let product: Product
     let isSelected: Bool
     let selectedBorder: Color
     let unselectedBorder: Color
@@ -326,8 +358,40 @@ private struct PricingCard: View {
     let textHeading: Color
     let textBody: Color
     let textMuted: Color
-
     var onTap: () -> Void
+
+    private var isYearly: Bool {
+        product.id == SubscriptionManager.ProductID.yearly.rawValue
+    }
+
+    private var periodText: String {
+        guard let subscription = product.subscription else { return "" }
+        switch subscription.subscriptionPeriod.unit {
+        case .week: return "/week"
+        case .month: return "/month"
+        case .year: return "/year"
+        default: return ""
+        }
+    }
+
+    private var subtextValue: String? {
+        guard isYearly else { return nil }
+        // Calculate monthly equivalent for yearly
+        let monthlyPrice = product.price / 12
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = product.priceFormatStyle.locale
+        if let formatted = formatter.string(from: monthlyPrice as NSDecimalNumber) {
+            return "Just \(formatted)/month"
+        }
+        return nil
+    }
+
+    private var savingsBadge: String? {
+        // Show savings badge for yearly plan
+        guard isYearly else { return nil }
+        return "BEST VALUE"
+    }
 
     var body: some View {
         Button(action: onTap) {
@@ -348,11 +412,11 @@ private struct PricingCard: View {
                 // Plan details
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 8) {
-                        Text(title)
+                        Text(product.displayName)
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(textHeading)
 
-                        if let badge = badge {
+                        if let badge = savingsBadge {
                             Text(badge)
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundColor(.white)
@@ -365,7 +429,7 @@ private struct PricingCard: View {
                         }
                     }
 
-                    if let subtext = subtext {
+                    if let subtext = subtextValue {
                         Text(subtext)
                             .font(.system(size: 13))
                             .foregroundColor(textMuted)
@@ -376,11 +440,11 @@ private struct PricingCard: View {
 
                 // Price
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
-                    Text(price)
+                    Text(product.displayPrice)
                         .font(.system(size: 22, weight: .bold))
                         .foregroundColor(textHeading)
 
-                    Text(period)
+                    Text(periodText)
                         .font(.system(size: 14))
                         .foregroundColor(textMuted)
                 }
