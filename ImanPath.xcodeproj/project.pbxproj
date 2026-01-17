@@ -6,6 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3128FC092F19BBB300A2194D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 3128FC082F19BBB300A2194D /* Lottie */; };
+		3128FC102F19C8D700A2194D /* brain_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC0F2F19C8D700A2194D /* brain_animation.json */; };
+		3128FC122F19CCEF00A2194D /* heart_broken_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC112F19CCEF00A2194D /* heart_broken_animation.json */; };
+		3128FC142F19D84400A2194D /* faith_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC132F19D84400A2194D /* faith_animation.json */; };
+		3128FC162F1A790A00A2194D /* plant_growing_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC152F1A790A00A2194D /* plant_growing_animation.json */; };
+		3128FC1A2F1A8FDD00A2194D /* trophy_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC192F1A8FDC00A2194D /* trophy_animation.json */; };
+		3128FC1C2F1A927200A2194D /* progress_chart_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC1B2F1A927200A2194D /* progress_chart_animation.json */; };
+		3128FC1E2F1A9A4D00A2194D /* clapping_hands_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC1D2F1A9A4D00A2194D /* clapping_hands_animation.json */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3128E4B72F10776E00C1ACD8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +38,13 @@
 		3128E4A52F10776C00C1ACD8 /* ImanPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImanPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3128E4B62F10776E00C1ACD8 /* ImanPathTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImanPathTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3128E4C02F10776E00C1ACD8 /* ImanPathUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImanPathUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3128FC0F2F19C8D700A2194D /* brain_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = brain_animation.json; sourceTree = "<group>"; };
+		3128FC112F19CCEF00A2194D /* heart_broken_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = heart_broken_animation.json; sourceTree = "<group>"; };
+		3128FC132F19D84400A2194D /* faith_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = faith_animation.json; sourceTree = "<group>"; };
+		3128FC152F1A790A00A2194D /* plant_growing_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = plant_growing_animation.json; sourceTree = "<group>"; };
+		3128FC192F1A8FDC00A2194D /* trophy_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trophy_animation.json; sourceTree = "<group>"; };
+		3128FC1B2F1A927200A2194D /* progress_chart_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = progress_chart_animation.json; sourceTree = "<group>"; };
+		3128FC1D2F1A9A4D00A2194D /* clapping_hands_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = clapping_hands_animation.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3128FC092F19BBB300A2194D /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +98,13 @@
 				3128E4B92F10776E00C1ACD8 /* ImanPathTests */,
 				3128E4C32F10776E00C1ACD8 /* ImanPathUITests */,
 				3128E4A62F10776C00C1ACD8 /* Products */,
+				3128FC0F2F19C8D700A2194D /* brain_animation.json */,
+				3128FC112F19CCEF00A2194D /* heart_broken_animation.json */,
+				3128FC132F19D84400A2194D /* faith_animation.json */,
+				3128FC152F1A790A00A2194D /* plant_growing_animation.json */,
+				3128FC192F1A8FDC00A2194D /* trophy_animation.json */,
+				3128FC1B2F1A927200A2194D /* progress_chart_animation.json */,
+				3128FC1D2F1A9A4D00A2194D /* clapping_hands_animation.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,6 +138,7 @@
 			);
 			name = ImanPath;
 			packageProductDependencies = (
+				3128FC082F19BBB300A2194D /* Lottie */,
 			);
 			productName = ImanPath;
 			productReference = 3128E4A52F10776C00C1ACD8 /* ImanPath.app */;
@@ -195,6 +222,9 @@
 			);
 			mainGroup = 3128E49C2F10776C00C1ACD8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3128FC072F19BBB200A2194D /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3128E4A62F10776C00C1ACD8 /* Products */;
 			projectDirPath = "";
@@ -212,6 +242,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3128FC1C2F1A927200A2194D /* progress_chart_animation.json in Resources */,
+				3128FC122F19CCEF00A2194D /* heart_broken_animation.json in Resources */,
+				3128FC142F19D84400A2194D /* faith_animation.json in Resources */,
+				3128FC1A2F1A8FDD00A2194D /* trophy_animation.json in Resources */,
+				3128FC1E2F1A9A4D00A2194D /* clapping_hands_animation.json in Resources */,
+				3128FC162F1A790A00A2194D /* plant_growing_animation.json in Resources */,
+				3128FC102F19C8D700A2194D /* brain_animation.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +433,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "ImanPath uses the camera to help you reflect during moments of struggle.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -411,7 +452,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zakaden.ImanPath;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zakaden.Return;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -435,6 +476,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "ImanPath uses the camera to help you reflect during moments of struggle.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -450,7 +495,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zakaden.ImanPath;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zakaden.Return;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -591,6 +636,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3128FC072F19BBB200A2194D /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3128FC082F19BBB300A2194D /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3128FC072F19BBB200A2194D /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3128E49D2F10776C00C1ACD8 /* Project object */;
 }

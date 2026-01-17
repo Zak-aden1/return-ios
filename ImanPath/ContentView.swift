@@ -6,16 +6,36 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var users: [User]
+
+    private var dataManager: DataManager {
+        DataManager(modelContext: modelContext)
+    }
+
+    private var shouldShowOnboarding: Bool {
+        guard let user = users.first else { return true }
+        return !user.onboardingCompleted
+    }
+
+    private var shouldShowTutorial: Bool {
+        guard let user = users.first else { return false }
+        return user.onboardingCompleted && !user.hasSeenTutorial
+    }
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if shouldShowOnboarding {
+            OnboardingFlowView()
+        } else if shouldShowTutorial {
+            TutorialView(onComplete: {
+                dataManager.completeTutorial()
+            })
+        } else {
+            HomeView()
         }
-        .padding()
     }
 }
 
