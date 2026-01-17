@@ -115,42 +115,11 @@ struct PaywallScreen: View {
 
                     Spacer().frame(height: 32)
 
-                    // Pricing cards - Dynamic from StoreKit
-                    VStack(spacing: 12) {
-                        if subscriptionManager.isLoading && subscriptionManager.products.isEmpty {
-                            ProgressView()
-                                .padding(.vertical, 40)
-                        } else if subscriptionManager.products.isEmpty {
-                            // Fallback if products fail to load
-                            Text("Unable to load subscription options")
-                                .font(.system(size: 15))
-                                .foregroundColor(textMuted)
-                                .padding(.vertical, 40)
-                        } else {
-                            // Show products in order: yearly first (best value), then monthly, then weekly
-                            ForEach(subscriptionManager.products.reversed(), id: \.id) { product in
-                                ProductCard(
-                                    product: product,
-                                    isSelected: selectedProductID == product.id,
-                                    selectedBorder: selectedBorder,
-                                    unselectedBorder: unselectedBorder,
-                                    badgeColor: badgeGreen,
-                                    textHeading: textHeading,
-                                    textBody: textBody,
-                                    textMuted: textMuted
-                                ) {
-                                    withAnimation(.spring(response: 0.3)) {
-                                        selectedProductID = product.id
-                                    }
-                                    triggerHaptic(.light)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .opacity(showContent ? 1 : 0)
-                    .offset(y: showContent ? 0 : 15)
-                    .animation(.easeOut(duration: 0.5).delay(0.3), value: showContent)
+                    // Pricing cards - Horizontal row with yearly highlighted
+                    pricingSection
+                        .opacity(showContent ? 1 : 0)
+                        .offset(y: showContent ? 0 : 15)
+                        .animation(.easeOut(duration: 0.5).delay(0.3), value: showContent)
 
                     Spacer().frame(height: 24)
 
@@ -290,6 +259,91 @@ struct PaywallScreen: View {
         }
     }
 
+    // MARK: - Pricing Section (Extracted for compiler)
+
+    @ViewBuilder
+    private var pricingSection: some View {
+        if subscriptionManager.isLoading && subscriptionManager.products.isEmpty {
+            ProgressView()
+                .padding(.vertical, 40)
+                .padding(.horizontal, 24)
+        } else if subscriptionManager.products.isEmpty {
+            Text("Unable to load subscription options")
+                .font(.system(size: 15))
+                .foregroundColor(textMuted)
+                .padding(.vertical, 40)
+                .padding(.horizontal, 24)
+        } else {
+            pricingCardsRow
+        }
+    }
+
+    @ViewBuilder
+    private var pricingCardsRow: some View {
+        HStack(alignment: .bottom, spacing: 10) {
+            // Weekly - Left
+            if let weekly = subscriptionManager.products.first(where: { $0.id == "week_5" }) {
+                CompactPricingCard(
+                    product: weekly,
+                    label: "Weekly",
+                    isSelected: selectedProductID == weekly.id,
+                    isHighlighted: false,
+                    accentViolet: accentViolet,
+                    sunriseGlow: sunriseGlow,
+                    textHeading: textHeading,
+                    textMuted: textMuted
+                ) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        selectedProductID = weekly.id
+                    }
+                    triggerHaptic(.light)
+                }
+            }
+
+            // Yearly - Center (Highlighted)
+            if let yearly = subscriptionManager.products.first(where: { $0.id == "yearly_50" }) {
+                CompactPricingCard(
+                    product: yearly,
+                    label: "Yearly",
+                    isSelected: selectedProductID == yearly.id,
+                    isHighlighted: true,
+                    badgeText: "BEST VALUE",
+                    subtitle: "$4.17/mo",
+                    accentViolet: accentViolet,
+                    sunriseGlow: sunriseGlow,
+                    textHeading: textHeading,
+                    textMuted: textMuted,
+                    badgeColor: badgeGreen
+                ) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        selectedProductID = yearly.id
+                    }
+                    triggerHaptic(.light)
+                }
+            }
+
+            // Monthly - Right
+            if let monthly = subscriptionManager.products.first(where: { $0.id == "month_10" }) {
+                CompactPricingCard(
+                    product: monthly,
+                    label: "Monthly",
+                    isSelected: selectedProductID == monthly.id,
+                    isHighlighted: false,
+                    accentViolet: accentViolet,
+                    sunriseGlow: sunriseGlow,
+                    textHeading: textHeading,
+                    textMuted: textMuted
+                ) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        selectedProductID = monthly.id
+                    }
+                    triggerHaptic(.light)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
     private func purchaseSelectedProduct() async {
         guard let productID = selectedProductID,
               let product = subscriptionManager.products.first(where: { $0.id == productID }) else {
@@ -348,20 +402,23 @@ private struct FeatureRow: View {
     }
 }
 
-// MARK: - Product Card (Dynamic from StoreKit)
-private struct ProductCard: View {
+// MARK: - Compact Pricing Card (Horizontal Layout)
+private struct CompactPricingCard: View {
     let product: Product
+    let label: String
     let isSelected: Bool
-    let selectedBorder: Color
-    let unselectedBorder: Color
-    let badgeColor: Color
+    let isHighlighted: Bool
+    var badgeText: String? = nil
+    var subtitle: String? = nil
+    let accentViolet: Color
+    let sunriseGlow: Color
     let textHeading: Color
-    let textBody: Color
     let textMuted: Color
+    var badgeColor: Color = Color(hex: "10B981")
     var onTap: () -> Void
 
-    private var isYearly: Bool {
-        product.id == SubscriptionManager.ProductID.yearly.rawValue
+    private var cardHeight: CGFloat {
+        isHighlighted ? 135 : 110
     }
 
     private var periodText: String {
@@ -374,91 +431,72 @@ private struct ProductCard: View {
         }
     }
 
-    private var subtextValue: String? {
-        guard isYearly else { return nil }
-        // Calculate monthly equivalent for yearly
-        let monthlyPrice = product.price / 12
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = product.priceFormatStyle.locale
-        if let formatted = formatter.string(from: monthlyPrice as NSDecimalNumber) {
-            return "Just \(formatted)/month"
-        }
-        return nil
-    }
-
-    private var savingsBadge: String? {
-        // Show savings badge for yearly plan
-        guard isYearly else { return nil }
-        return "BEST VALUE"
-    }
-
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
-                // Radio button
-                ZStack {
-                    Circle()
-                        .stroke(isSelected ? selectedBorder : unselectedBorder, lineWidth: 2)
-                        .frame(width: 24, height: 24)
-
-                    if isSelected {
-                        Circle()
-                            .fill(selectedBorder)
-                            .frame(width: 14, height: 14)
-                    }
+            VStack(spacing: 4) {
+                // Badge (only for highlighted)
+                if let badge = badgeText {
+                    Text(badge)
+                        .font(.system(size: 8, weight: .bold))
+                        .tracking(0.3)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule()
+                                .fill(badgeColor)
+                        )
+                } else if isHighlighted {
+                    // Spacer to maintain alignment
+                    Color.clear.frame(height: 16)
                 }
 
-                // Plan details
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 8) {
-                        Text(product.displayName)
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(textHeading)
-
-                        if let badge = savingsBadge {
-                            Text(badge)
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(
-                                    Capsule()
-                                        .fill(badgeColor)
-                                )
-                        }
-                    }
-
-                    if let subtext = subtextValue {
-                        Text(subtext)
-                            .font(.system(size: 13))
-                            .foregroundColor(textMuted)
-                    }
-                }
-
-                Spacer()
+                // Label
+                Text(label)
+                    .font(.system(size: isHighlighted ? 14 : 12, weight: .semibold))
+                    .foregroundColor(isSelected ? textHeading : textMuted)
 
                 // Price
-                HStack(alignment: .lastTextBaseline, spacing: 2) {
-                    Text(product.displayPrice)
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(textHeading)
+                Text(product.displayPrice)
+                    .font(.system(size: isHighlighted ? 22 : 18, weight: .bold, design: .rounded))
+                    .foregroundColor(textHeading)
 
-                    Text(periodText)
-                        .font(.system(size: 14))
-                        .foregroundColor(textMuted)
+                // Period
+                Text(periodText)
+                    .font(.system(size: 10))
+                    .foregroundColor(textMuted)
+
+                // Subtitle (monthly equivalent for yearly)
+                if let sub = subtitle {
+                    Text(sub)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(sunriseGlow)
+                        .padding(.top, 1)
                 }
             }
-            .padding(20)
+            .frame(maxWidth: .infinity)
+            .frame(height: cardHeight)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(isSelected ? selectedBorder : unselectedBorder, lineWidth: isSelected ? 2 : 1)
-                    )
-                    .shadow(color: isSelected ? selectedBorder.opacity(0.15) : Color.clear, radius: 12, x: 0, y: 4)
+                ZStack {
+                    // Base card
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(Color.white)
+
+                    // Selected/Highlighted border
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(
+                            isSelected ? accentViolet : (isHighlighted ? sunriseGlow.opacity(0.5) : Color.clear),
+                            lineWidth: isSelected ? 2.5 : 1.5
+                        )
+                }
             )
+            .shadow(
+                color: isHighlighted ? sunriseGlow.opacity(isSelected ? 0.35 : 0.2) : Color.black.opacity(0.04),
+                radius: isHighlighted ? 12 : 6,
+                x: 0,
+                y: isHighlighted ? 6 : 3
+            )
+            .scaleEffect(isSelected ? 1.03 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
     }
