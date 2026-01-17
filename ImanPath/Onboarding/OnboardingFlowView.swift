@@ -14,6 +14,9 @@ struct OnboardingFlowView: View {
     @State private var currentStep: Int = 1
     private let totalSteps = 32
 
+    // Set when user reaches prepaywall - they won't redo onboarding if they leave
+    @AppStorage("hasSeenPrepaywall") private var hasSeenPrepaywall: Bool = false
+
     // DataManager for persistence
     private var dataManager: DataManager {
         DataManager(modelContext: modelContext)
@@ -407,10 +410,16 @@ struct OnboardingFlowView: View {
 
                 case 31:
                     // Pre-paywall benefits screen
+                    // Mark that user has seen prepaywall - they won't redo onboarding if they leave
                     PrePaywallScreen(
                         userName: userName,
                         onContinue: { currentStep = 32 }
                     )
+                    .onAppear {
+                        if !hasSeenPrepaywall {
+                            hasSeenPrepaywall = true
+                        }
+                    }
 
                 case 32:
                     // Paywall - subscription options
