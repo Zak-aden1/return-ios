@@ -49,8 +49,8 @@ struct TutorialView: View {
         ),
         TutorialStepData(
             heading: "Honor Your Niyyah",
-            subtitle: "You've done the hard part. All that's left is to show up each day. Allah sees every effort you make.",
-            callout: "Complete your daily check-in",
+            subtitle: "When the journey gets hard, your reasons will guide you back.",
+            callout: "Remember your why",
             screenshotName: "tutorial_commitment"
         )
     ]
