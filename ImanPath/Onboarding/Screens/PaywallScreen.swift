@@ -78,9 +78,12 @@ struct PaywallScreen: View {
 
                     // Header
                     VStack(spacing: 12) {
-                        Text("🕌")
-                            .font(.system(size: 60))
-                            .shadow(color: sunriseGlow.opacity(0.3), radius: 15, x: 0, y: 8)
+                        // Logo
+                        Image("ReturnLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 40)
+                            .foregroundColor(textHeading)
 
                         Text("Start Your Journey\nto Freedom")
                             .font(.system(size: 28, weight: .bold, design: .serif))
@@ -286,6 +289,8 @@ struct PaywallScreen: View {
                 CompactPricingCard(
                     product: weekly,
                     label: "Weekly",
+                    dailyPrice: "$0.71 / day",
+                    totalPrice: "$4.99 per week",
                     isSelected: selectedProductID == weekly.id,
                     isHighlighted: false,
                     accentViolet: accentViolet,
@@ -305,10 +310,11 @@ struct PaywallScreen: View {
                 CompactPricingCard(
                     product: yearly,
                     label: "Yearly",
+                    dailyPrice: "$0.14 / day",
+                    totalPrice: "$49.99 per year",
                     isSelected: selectedProductID == yearly.id,
                     isHighlighted: true,
-                    badgeText: "BEST VALUE",
-                    subtitle: "$4.17/mo",
+                    badgeText: "Save 80%",
                     accentViolet: accentViolet,
                     sunriseGlow: sunriseGlow,
                     textHeading: textHeading,
@@ -327,6 +333,8 @@ struct PaywallScreen: View {
                 CompactPricingCard(
                     product: monthly,
                     label: "Monthly",
+                    dailyPrice: "$0.33 / day",
+                    totalPrice: "$9.99 per month",
                     isSelected: selectedProductID == monthly.id,
                     isHighlighted: false,
                     accentViolet: accentViolet,
@@ -406,10 +414,11 @@ private struct FeatureRow: View {
 private struct CompactPricingCard: View {
     let product: Product
     let label: String
+    let dailyPrice: String
+    let totalPrice: String
     let isSelected: Bool
     let isHighlighted: Bool
     var badgeText: String? = nil
-    var subtitle: String? = nil
     let accentViolet: Color
     let sunriseGlow: Color
     let textHeading: Color
@@ -418,17 +427,7 @@ private struct CompactPricingCard: View {
     var onTap: () -> Void
 
     private var cardHeight: CGFloat {
-        isHighlighted ? 135 : 110
-    }
-
-    private var periodText: String {
-        guard let subscription = product.subscription else { return "" }
-        switch subscription.subscriptionPeriod.unit {
-        case .week: return "/week"
-        case .month: return "/month"
-        case .year: return "/year"
-        default: return ""
-        }
+        isHighlighted ? 140 : 115
     }
 
     var body: some View {
@@ -437,18 +436,18 @@ private struct CompactPricingCard: View {
                 // Badge (only for highlighted)
                 if let badge = badgeText {
                     Text(badge)
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.system(size: 9, weight: .bold))
                         .tracking(0.3)
                         .foregroundColor(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
                         .background(
                             Capsule()
                                 .fill(badgeColor)
                         )
                 } else if isHighlighted {
                     // Spacer to maintain alignment
-                    Color.clear.frame(height: 16)
+                    Color.clear.frame(height: 20)
                 }
 
                 // Label
@@ -456,23 +455,17 @@ private struct CompactPricingCard: View {
                     .font(.system(size: isHighlighted ? 14 : 12, weight: .semibold))
                     .foregroundColor(isSelected ? textHeading : textMuted)
 
-                // Price
-                Text(product.displayPrice)
-                    .font(.system(size: isHighlighted ? 22 : 18, weight: .bold, design: .rounded))
+                // Daily price (main price)
+                Text(dailyPrice)
+                    .font(.system(size: isHighlighted ? 18 : 15, weight: .bold, design: .rounded))
                     .foregroundColor(textHeading)
 
-                // Period
-                Text(periodText)
+                // Total price
+                Text(totalPrice)
                     .font(.system(size: 10))
                     .foregroundColor(textMuted)
-
-                // Subtitle (monthly equivalent for yearly)
-                if let sub = subtitle {
-                    Text(sub)
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(sunriseGlow)
-                        .padding(.top, 1)
-                }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
             .frame(height: cardHeight)

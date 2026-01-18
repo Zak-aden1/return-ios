@@ -26,11 +26,11 @@ struct TutorialView: View {
         TutorialStepData(
             heading: "Welcome to Return!",
             subtitle: "Bismillah. Here's how your journey begins.",
-            callout: "Emergency support when you need it",
-            screenshotName: "tutorial_panic" // Will use placeholder for now
+            callout: "Your home for recovery",
+            screenshotName: "tutorial_home"
         ),
         TutorialStepData(
-            heading: "Track Your Progress",
+            heading: "See Your Progress",
             subtitle: "Watch your streak grow and unlock milestones",
             callout: "Your journey at a glance",
             screenshotName: "tutorial_streak"
@@ -143,30 +143,11 @@ struct TutorialPageView: View {
         VStack(spacing: 0) {
             Spacer()
 
-            // Phone with circular glow backdrop
-            ZStack {
-                // Circular glow backdrop (like Quittr)
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                glowBlue.opacity(0.8),
-                                glowBlue.opacity(0.4),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 60,
-                            endRadius: 160
-                        )
-                    )
-                    .frame(width: 320, height: 320)
-
-                // Phone mockup
-                PhoneFrameView(
-                    screenshotName: step.screenshotName,
-                    accentAmber: accentAmber
-                )
-            }
+            // Floating screenshot card
+            PhoneFrameView(
+                screenshotName: step.screenshotName,
+                accentAmber: accentAmber
+            )
             .scaleEffect(appeared ? 1 : 0.9)
             .opacity(appeared ? 1 : 0)
 
@@ -205,46 +186,124 @@ struct TutorialPageView: View {
     }
 }
 
-// MARK: - Phone Frame View (Quittr style - gold frame with glow)
+// MARK: - Phone Frame View (Realistic iPhone mockup like Unchained/Quittr)
 struct PhoneFrameView: View {
     let screenshotName: String
     let accentAmber: Color
 
-    // Frame colors - champagne/gold like Quittr
-    private let frameOuter = Color(hex: "8B7355")
-    private let frameInner = Color(hex: "A08060")
-    private let screenBg = Color(hex: "0A1628")
+    // iPhone proportions - sized to fit screenshot content
+    private let phoneWidth: CGFloat = 210
+    private let phoneHeight: CGFloat = 365
+    private let bezelWidth: CGFloat = 6
+    private let cornerRadius: CGFloat = 40
+    private let screenCornerRadius: CGFloat = 34
+    private let dynamicIslandWidth: CGFloat = 80
+    private let dynamicIslandHeight: CGFloat = 25
+
+    var body: some View {
+        // Container that clips the phone at bottom
+        VStack(spacing: 0) {
+            ZStack {
+                // Circular glow behind phone
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color(hex: "2A5080").opacity(0.7),
+                                Color(hex: "1E3A5F").opacity(0.4),
+                                Color.clear
+                            ],
+                            center: .center,
+                            startRadius: 50,
+                            endRadius: 180
+                        )
+                    )
+                    .frame(width: 360, height: 360)
+                    .offset(y: 50)
+
+                // The iPhone
+                iPhoneDevice(
+                    screenshotName: screenshotName,
+                    accentAmber: accentAmber,
+                    phoneWidth: phoneWidth,
+                    phoneHeight: phoneHeight,
+                    bezelWidth: bezelWidth,
+                    cornerRadius: cornerRadius,
+                    screenCornerRadius: screenCornerRadius,
+                    dynamicIslandWidth: dynamicIslandWidth,
+                    dynamicIslandHeight: dynamicIslandHeight
+                )
+                .offset(y: 30) // Push down so bottom gets cropped
+            }
+        }
+        .frame(height: 360) // Container height clips the overflow
+        .clipped()
+    }
+}
+
+// MARK: - iPhone Device Frame
+struct iPhoneDevice: View {
+    let screenshotName: String
+    let accentAmber: Color
+    let phoneWidth: CGFloat
+    let phoneHeight: CGFloat
+    let bezelWidth: CGFloat
+    let cornerRadius: CGFloat
+    let screenCornerRadius: CGFloat
+    let dynamicIslandWidth: CGFloat
+    let dynamicIslandHeight: CGFloat
 
     var body: some View {
         ZStack {
-            // Outer frame (gold/champagne)
-            RoundedRectangle(cornerRadius: 36)
-                .fill(
-                    LinearGradient(
-                        colors: [frameInner, frameOuter, frameInner],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+            // Phone body (black frame with subtle edge highlight)
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(Color.black)
+                .frame(width: phoneWidth, height: phoneHeight)
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.3),
+                                    Color.white.opacity(0.1),
+                                    Color.white.opacity(0.05)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
                 )
-                .frame(width: 180, height: 360)
-                .shadow(color: Color.black.opacity(0.4), radius: 20, x: 0, y: 10)
+                .shadow(color: .black.opacity(0.5), radius: 25, x: 0, y: 15)
 
-            // Screen area
-            RoundedRectangle(cornerRadius: 30)
-                .fill(screenBg)
-                .frame(width: 164, height: 344)
+            // Screen area (dark background)
+            RoundedRectangle(cornerRadius: screenCornerRadius)
+                .fill(Color(hex: "0A1628"))
+                .frame(
+                    width: phoneWidth - (bezelWidth * 2),
+                    height: phoneHeight - (bezelWidth * 2)
+                )
 
-            // Screenshot or placeholder content
+            // Screenshot content
             ScreenshotContent(name: screenshotName, accentAmber: accentAmber)
-                .frame(width: 164, height: 344)
-                .clipShape(RoundedRectangle(cornerRadius: 30))
+                .frame(
+                    width: phoneWidth - (bezelWidth * 2),
+                    height: phoneHeight - (bezelWidth * 2)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: screenCornerRadius))
 
-            // Dynamic island
+            // Dynamic Island
             Capsule()
                 .fill(Color.black)
-                .frame(width: 60, height: 22)
-                .offset(y: -152)
+                .frame(width: dynamicIslandWidth, height: dynamicIslandHeight)
+                .offset(y: -(phoneHeight / 2) + bezelWidth + 18)
         }
+        // Subtle 3D tilt
+        .rotation3DEffect(
+            .degrees(3),
+            axis: (x: 1, y: 0, z: 0),
+            perspective: 0.8
+        )
     }
 }
 
@@ -256,9 +315,12 @@ struct ScreenshotContent: View {
     var body: some View {
         // Try to load image from assets, fall back to placeholder
         if let _ = UIImage(named: name) {
-            Image(name)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
+            GeometryReader { geo in
+                Image(name)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+            }
         } else {
             // Placeholder content based on screen type
             PlaceholderScreenContent(type: name, accentAmber: accentAmber)
