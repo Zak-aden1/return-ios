@@ -756,6 +756,54 @@ Centralized manager for all SwiftData operations:
 
 ---
 
+## Website (returntoiman.com)
+
+Separate static website for legal pages and landing page.
+
+**Location:** `/Users/zak/Code/real-projects/return-website/`
+
+**Hosted on:** Vercel (auto-deployed)
+
+**Domain:** `returntoiman.com` (DNS via Namecheap)
+
+### Pages
+
+| Page | URL | Purpose |
+|------|-----|---------|
+| Landing | `returntoiman.com` | Coming soon page with logo, app screenshot |
+| Privacy Policy | `returntoiman.com/privacy` | Required for App Store |
+| Terms of Service | `returntoiman.com/terms` | Required for App Store |
+
+### Design
+
+- Dark theme matching app (`#0A1628` background)
+- Cormorant Garamond + Source Serif 4 typography
+- Animated twinkling stars
+- iPhone mockup with home screen screenshot
+- Subtle Islamic geometric pattern overlay
+- Staggered fade-up animations on load
+
+### Files
+
+```
+return-website/
+├── assets/
+│   ├── ReturnLogo.png        # App logo
+│   └── home-screenshot.png   # Full iPhone screenshot
+├── index.html                # Landing page
+├── privacy.html              # Privacy policy
+├── terms.html                # Terms of service
+└── vercel.json               # URL routing (/privacy → privacy.html)
+```
+
+### App Integration
+
+Links in app point to website:
+- `PaywallScreen.swift` - Footer links
+- `SettingsView.swift` - Settings menu links
+
+---
+
 ## Technical Notes
 
 ### Camera Implementation

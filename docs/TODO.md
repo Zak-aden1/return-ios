@@ -6,8 +6,8 @@
 |------|--------|-------|
 | App Icon (1024x1024) | [x] | Added - placeholder "RETURN" text design |
 | Privacy Manifest | [ ] | Create PrivacyInfo.xcprivacy - required for @AppStorage/UserDefaults usage |
-| Privacy Policy URL | [ ] | Currently: zakaden.com/return/privacy |
-| Terms of Service URL | [ ] | Currently: zakaden.com/return/terms |
+| Privacy Policy URL | [x] | https://returntoiman.com/privacy |
+| Terms of Service URL | [x] | https://returntoiman.com/terms |
 | Free Trial UI vs Reality | [x] | Removed "free trial" text from PaywallScreen |
 
 ## Required Before Launch

@@ -193,7 +193,7 @@ struct PaywallScreen: View {
                             .foregroundColor(textMuted.opacity(0.5))
 
                         Button(action: {
-                            if let url = URL(string: "https://zakaden.com/return/terms") {
+                            if let url = URL(string: "https://returntoiman.com/terms") {
                                 UIApplication.shared.open(url)
                             }
                         }) {
@@ -207,7 +207,7 @@ struct PaywallScreen: View {
                             .foregroundColor(textMuted.opacity(0.5))
 
                         Button(action: {
-                            if let url = URL(string: "https://zakaden.com/return/privacy") {
+                            if let url = URL(string: "https://returntoiman.com/privacy") {
                                 UIApplication.shared.open(url)
                             }
                         }) {

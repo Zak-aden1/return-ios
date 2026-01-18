@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
@@ -149,7 +150,9 @@ struct SettingsView: View {
                                 iconColor: Color(hex: "64748B"),
                                 title: "Privacy Policy"
                             ) {
-                                // TODO: Open privacy policy
+                                if let url = URL(string: "https://returntoiman.com/privacy") {
+                                    UIApplication.shared.open(url)
+                                }
                             }
 
                             Divider()
@@ -161,7 +164,9 @@ struct SettingsView: View {
                                 iconColor: Color(hex: "64748B"),
                                 title: "Terms of Service"
                             ) {
-                                // TODO: Open terms
+                                if let url = URL(string: "https://returntoiman.com/terms") {
+                                    UIApplication.shared.open(url)
+                                }
                             }
 
                             Divider()
