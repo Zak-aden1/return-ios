@@ -282,7 +282,7 @@ struct LottieOrSymbolView: View {
         ZStack {
             // Light backdrop circle for contrast
             Circle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color.white.opacity(0.4))
                 .frame(width: size + 60, height: size + 60)
 
             Group {

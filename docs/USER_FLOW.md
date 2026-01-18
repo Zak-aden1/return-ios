@@ -25,7 +25,7 @@
 
 **Target:** 70% completion, 25% CVR
 
-**Total Steps:** 31 (with conditional logic)
+**Total Steps:** 30
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -36,111 +36,103 @@
      │
      ▼
 ┌─────────────┐
-│  WELCOME    │  "Assalamu Alaikum"
-│  SCREEN     │  "You're not alone in this struggle"
-│  (Step 1)   │  CTA: "Begin"
+│  WELCOME    │  Purple gradient + mountain scene + mosque emoji
+│  SCREEN     │  "Allah has given you the strength to overcome"
+│  (Step 1)   │  CTA: "Start Quiz" (breathing amber glow)
 └─────────────┘
      │
-     ▼
-┌─────────────┐
-│  WHY HERE?  │  Multi-select:
-│  (Step 2)   │  □ Quit porn  □ Strengthen iman
-│             │  □ Protect relationships  □ Feel clean
-│             │  □ Preparing for marriage  □ Other
-└─────────────┘
-     │
-     ▼
+     ▼ (skips directly to quiz - no "Why Here?" screen)
 ┌─────────────────────────────────────────────────────────────┐
-│                    EMOTIONAL QUIZ (Steps 3-15)               │
+│              PERSONALIZATION QUIZ (Steps 3-13)               │
+│                    11 Questions + Name                       │
+│                                                              │
+│  ★ TAP-TO-ADVANCE: No Continue button                       │
+│    User taps answer → auto-advances after 0.25s             │
+│    "Your responses are anonymous" shown on each screen      │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  Q3: "How old are you?"                                     │
-│      Under 18 │ 18-24 │ 25-34 │ 35-44 │ 45+                │
+│  Q1 (Step 3): "What is your gender?"                        │
+│      Male │ Female │ Prefer not to say                      │
 │                          │                                   │
 │                          ▼                                   │
-│  Q4: "What is your gender?"                                 │
-│      Male │ Female                                          │
+│  Q2 (Step 4): "How often do you typically view pornography?"│
+│      More than once a day │ Once a day │                    │
+│      A few times a week │ Less than once a week             │
 │                          │                                   │
 │                          ▼                                   │
-│  Q5: "How long have you struggled with this?"               │
-│      < 1 year │ 1-3 years │ 3-5 years │ 5-10 │ 10+         │
+│  Q3 (Step 5): "When did you first come across pornography?" │
+│      Under 13 │ 13-16 │ 17-24 │ 24+                        │
 │                          │                                   │
 │                          ▼                                   │
-│  Q6: "How often do you watch porn?"                         │
-│      Daily │ Few times/week │ Weekly │ Few times/month │ Rarely │
-│                          │                                   │
-│                          ▼                                   │
-│  Q7: "Has the content become more extreme over time?"       │
+│  Q4 (Step 6): "Has your usage increased over time?"         │
 │      Yes │ No │ Not sure                                    │
 │                          │                                   │
 │                          ▼                                   │
-│  Q8: "What is your relationship status?"                    │
+│  Q5 (Step 7): "Have you noticed a shift towards more        │
+│                extreme or graphic material?"                 │
+│      Yes │ No │ Not sure                                    │
+│                          │                                   │
+│                          ▼                                   │
+│  Q6 (Step 8): "Do you find it difficult to achieve sexual   │
+│                arousal without porn?"                        │
+│      Yes │ Sometimes │ No                                   │
+│                          │                                   │
+│                          ▼                                   │
+│  Q7 (Step 9): "Do you use pornography to cope with stress,  │
+│                boredom, or emotional discomfort?"            │
+│      Yes │ Sometimes │ No                                   │
+│                          │                                   │
+│                          ▼                                   │
+│  Q8 (Step 10): "Have you ever spent money on explicit       │
+│                 content?"                                    │
+│      Yes │ No                                               │
+│                          │                                   │
+│                          ▼                                   │
+│  Q9 (Step 11): "What is your relationship status?"          │
 │      Single │ In a relationship │ Engaged │ Married         │
 │                          │                                   │
-│               ┌──────────┴──────────┐                       │
-│               │                      │                       │
-│    (if married/engaged)    (if single/dating)               │
-│               │                      │                       │
-│               ▼                      │                       │
-│  Q9: "Has this affected your        │                       │
-│       relationship or marriage?"    │                       │
-│      Yes, significantly │ Somewhat  │                       │
-│      No │ Partner doesn't know      │                       │
-│               │                      │                       │
-│               └──────────┬───────────┘                       │
+│                          ▼                                   │
+│  Q10 (Step 12): "How connected do you currently feel        │
+│                  to Allah?"                                  │
+│      Very connected │ Somewhat connected │                  │
+│      Disconnected │ Very disconnected                       │
 │                          │                                   │
 │                          ▼                                   │
-│  Q10: "How connected do you feel to Allah?"                 │
-│       Very │ Somewhat │ Disconnected │ Very disconnected    │
-│                          │                                   │
-│                          ▼                                   │
-│  Q11: "Has watching porn made you feel distant from Allah?" │
-│       Yes, very much │ Yes, somewhat │ Not sure │ No        │
-│                          │                                   │
-│                          ▼                                   │
-│  Q12: "Do you feel guilt or shame after watching?"          │
-│       Always │ Sometimes │ Rarely │ Never                   │
-│                          │                                   │
-│                          ▼                                   │
-│  Q13: "Do you repent after relapsing?"                      │
-│       Always │ Sometimes │ Rarely │ I've stopped trying     │
-│                          │                                   │
-│                          ▼                                   │
-│  Q14: "Have you tried to quit before?"                      │
-│       Yes, many times │ Yes, few times │ First time         │
-│                          │                                   │
-│                          ▼                                   │
-│  Q15: "What happens when you try to quit?"                  │
-│       Relapse in days │ Last few weeks │ Months but return  │
+│  Q11 (Step 13): "Has watching porn made you feel distant    │
+│                  from Allah?"                                │
+│      Yes, very much │ Yes, somewhat │ Not sure │ No         │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
      │
      ▼
 ┌─────────────┐
-│  NAME INPUT │  "Finally, a little more about you"
-│  (Step 16)  │  First Name text field
+│  NAME INPUT │  "Finally, what's your name?"
+│  (Step 14)  │  First Name text field
 │             │  CTA: "Complete Quiz"
+│             │  "Your responses are anonymous"
 └─────────────┘
      │
      ▼
 ┌─────────────┐
-│ CALCULATING │  "Analyzing your responses..."
-│  (Step 17)  │  Progress bar animation
-│             │  Auto-advances after ~3 seconds
+│ CALCULATING │  "Analyzing your answers..."
+│  (Step 15)  │  Circular progress animation with percentage
+│             │  4 phases: Analyzing → Understanding →
+│             │            Calculating → Preparing
+│             │  Auto-advances after ~8 seconds
 └─────────────┘
      │
      ▼
 ┌─────────────┐
 │ DEPENDENCE  │  Personalized score (e.g., 73/100)
 │  ANALYSIS   │  "High dependence" / "Moderate" / "Early stage"
-│  (Step 18)  │  Key insights from quiz responses
+│  (Step 16)  │  Key insights from quiz responses
 │             │  "You're not alone — recovery is possible"
 └─────────────┘
      │
      ▼
 ┌─────────────┐
 │  SYMPTOMS   │  "Excessive porn use can have negative impacts"
-│  (Step 19)  │
+│  (Step 17)  │
 │             │  Mental: □ Difficulty concentrating
 │             │          □ Poor memory / brain fog
 │             │          □ Feeling unmotivated
@@ -157,7 +149,7 @@
      │
      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              EDUCATION CAROUSEL (Step 20)                     │
+│              EDUCATION CAROUSEL (Step 18)                     │
 │                    4 Pain Slides + 1 Hope                     │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
@@ -184,7 +176,7 @@
      │
      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              SOLUTIONS CAROUSEL (Step 21)                     │
+│              SOLUTIONS CAROUSEL (Step 19)                     │
 │                    6 Benefit-Focused Slides                   │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
@@ -218,17 +210,19 @@
      │
      ▼
 ┌─────────────┐
-│  GOALS      │  "What does freedom look like to you?"
-│  INTRO      │  Brief intro with inspirational framing
-│  (Step 22)  │  Mountain sunrise visual
-│             │  CTA: "Choose My Goals"
+│  GOALS      │  Purple gradient + mountain scene + mosque emoji
+│  INTRO      │  (Matches Welcome screen aesthetic)
+│  (Step 20)  │  "Every Journey Begins with Goals"
+│             │  "Let's set yours together"
+│             │  Animated loading dots
+│             │  ★ AUTO-ADVANCES after 2.5 seconds (no button)
 └─────────────┘
      │
      ▼
 ┌─────────────┐
 │  GOALS      │  Multi-select goal cards (8 options):
 │  SELECTION  │  □ Strengthen Iman  □ Protect Family
-│  (Step 23)  │  □ Mental Clarity   □ Self-Respect
+│  (Step 21)  │  □ Mental Clarity   □ Self-Respect
 │             │  □ Better Focus     □ Break the Cycle
 │             │  □ Emotional Health □ Physical Energy
 │             │  Min: 1 selection, Max: 4
@@ -238,13 +232,13 @@
 ┌─────────────┐
 │ COMMITMENT  │  Personalized with user's name
 │   INTRO     │  "You've taken a courageous first step"
-│  (Step 24)  │  Builds anticipation for pledge
+│  (Step 22)  │  Builds anticipation for pledge
 │             │  CTA: "I'm Ready"
 └─────────────┘
      │
      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                  PLEDGE FLOW (Step 25)                        │
+│                  PLEDGE FLOW (Step 23)                        │
 │                 3 Sequential Pledges                          │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
@@ -267,7 +261,7 @@
      │
      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                 COMMITMENT CARD (Step 26)                     │
+│                 COMMITMENT CARD (Step 24)                     │
 │                      Make Your Niyyah                         │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
@@ -299,16 +293,23 @@
 ┌─────────────┐
 │ COMMITMENT  │  🕌 MashaAllah!
 │  CONGRATS   │  "You've taken a powerful first step"
-│  (Step 27)  │  Hadith: "Whoever intends to do a good deed..."
+│  (Step 25)  │  Hadith: "Whoever intends to do a good deed..."
 │             │  Floating mosque animation + glow
 │             │  CTA: "Continue Your Journey"
 └─────────────┘
      │
      ▼
 ┌─────────────┐
+│NOTIFICATION │  Request notification permission
+│ PERMISSION  │
+│  (Step 26)  │
+└─────────────┘
+     │
+     ▼
+┌─────────────┐
 │  RATING     │  "We're a small team, so a rating goes a long way ❤️"
 │  REQUEST    │  2 testimonial cards with 5-star ratings
-│  (Step 28)  │  [Rate the App] button → triggers StoreKit review
+│  (Step 27)  │  [Rate the App] button → triggers StoreKit review
 │             │  "Maybe later" skip link
 │             │  Auto-advances after rating
 └─────────────┘
@@ -317,7 +318,7 @@
 ┌─────────────┐
 │ TYPEWRITER  │  Auto-typing personalized messages:
 │  SCREEN     │  "Welcome to ImanPath,"
-│  (Step 29)  │  "Your path to freedom."
+│  (Step 28)  │  "Your path to freedom."
 │             │  "Based on your answers, we've built a plan..."
 │             │  "It's designed to help you quit porn..."
 │             │  "Now, it's time to invest in yourself."
@@ -327,7 +328,7 @@
      │
      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│              PRE-PAYWALL BENEFITS (Step 30)                   │
+│              PRE-PAYWALL BENEFITS (Step 29)                   │
 │                Long Scrollable Value Sell                     │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
@@ -353,7 +354,7 @@
      │
      ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                    PAYWALL (Step 31)                          │
+│                    PAYWALL (Step 30)                          │
 │                  Subscription Options                         │
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
@@ -389,7 +390,7 @@
 ┌─────────────┐
 │   HOME      │  ✓ Onboarding complete
 │  SCREEN     │  ✓ Streak: Day 0
-│  (Step 32)  │  ✓ Commitment card visible
+│             │  ✓ Commitment card visible
 │             │  ✓ First lesson unlocked
 └─────────────┘
 ```
@@ -1241,7 +1242,7 @@ Quick Prompts (Optional):
 
 | Flow | Screens | Avg Time | Key Conversion Point |
 |------|---------|----------|---------------------|
-| Onboarding | 31 | 6-10 min | Pledge Flow → Commitment → Pre-Paywall → Paywall |
+| Onboarding | 30 | 6-10 min | Pledge Flow → Commitment → Pre-Paywall → Paywall |
 | Daily Check-in | 7 | 60 sec | Clean status + daily niyyah |
 | Panic Button | 2-3 | 30-90 sec | Camera mirror → Branch decision |
 | Relapse | 5 | 2 min | Re-commitment |

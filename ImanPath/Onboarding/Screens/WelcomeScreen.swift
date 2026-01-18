@@ -14,6 +14,7 @@ struct WelcomeScreen: View {
     @State private var showContent: Bool = false
     @State private var mountainsOffset: CGFloat = 50
     @State private var glowPulse: Bool = false
+    @State private var buttonGlow: Bool = false
 
     // Colors - Deep spiritual purple/navy palette
     private let bgTop = Color(hex: "1A1033")          // Deep purple-black
@@ -134,7 +135,7 @@ struct WelcomeScreen: View {
 
                 Spacer().frame(height: 32)
 
-                // CTA Button - White/cream style
+                // CTA Button - White/cream style with breathing glow
                 Button(action: {
                     triggerHaptic(.medium)
                     onContinue()
@@ -151,10 +152,11 @@ struct WelcomeScreen: View {
                     .background(
                         RoundedRectangle(cornerRadius: 30)
                             .fill(Color.white)
-                            .shadow(color: Color.black.opacity(0.2), radius: 15, x: 0, y: 8)
+                            .shadow(color: sunriseGlow.opacity(buttonGlow ? 0.6 : 0.25), radius: buttonGlow ? 20 : 12, x: 0, y: 4)
+                            .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 6)
                     )
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 40)
                 .opacity(showContent ? 1 : 0)
                 .offset(y: showContent ? 0 : 20)
                 .animation(.easeOut(duration: 0.5).delay(1.2), value: showContent)
@@ -179,6 +181,13 @@ struct WelcomeScreen: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                     glowPulse = true
+                }
+            }
+
+            // Start button glow after it appears
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                    buttonGlow = true
                 }
             }
         }

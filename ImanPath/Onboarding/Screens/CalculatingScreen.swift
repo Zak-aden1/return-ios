@@ -127,8 +127,8 @@ struct CalculatingScreen: View {
     }
 
     private func startAnimation() {
-        // Animate progress from 0 to 1 over ~3 seconds
-        let totalDuration: Double = 3.0
+        // Animate progress from 0 to 1 over ~7.5 seconds
+        let totalDuration: Double = 7.5
         let steps = 100
         let stepDuration = totalDuration / Double(steps)
 

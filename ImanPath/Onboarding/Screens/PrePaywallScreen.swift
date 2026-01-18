@@ -166,16 +166,22 @@ struct PrePaywallScreen: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 34)
+                .frame(maxWidth: .infinity)
                 .background(
-                    LinearGradient(
-                        colors: [bgBottom.opacity(0), bgBottom, bgBottom],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: 140)
+                    VStack(spacing: 0) {
+                        LinearGradient(
+                            colors: [bgBottom.opacity(0), bgBottom],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 40)
+
+                        bgBottom
+                    }
                     .allowsHitTesting(false)
                 )
             }
+            .ignoresSafeArea(edges: .bottom)
         }
         .onAppear {
             withAnimation {

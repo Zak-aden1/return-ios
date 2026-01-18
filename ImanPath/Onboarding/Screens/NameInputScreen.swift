@@ -36,7 +36,7 @@ struct NameInputScreen: View {
             // Main content - grouped at top like Unchaind
             VStack(alignment: .leading, spacing: 20) {
                 // Title
-                Text("Finally, a little more about you")
+                Text("Finally, what's your name?")
                     .font(.system(size: 26, weight: .bold, design: .serif))
                     .foregroundColor(.white)
                     .padding(.top, 32)

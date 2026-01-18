@@ -35,14 +35,12 @@ struct QuizQuestionScreen: View {
 
     @State private var selectedOption: String? = nil
     @State private var showContent: Bool = false
+    @State private var isAdvancing: Bool = false
+    @State private var advanceToken: UUID? = nil
 
     private let warmAmber = Color(hex: "C4956A")
     private let cardBg = Color(hex: "1A2332")
     private let mutedText = Color(hex: "8A9BAE")
-
-    private var canContinue: Bool {
-        selectedOption != nil
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -80,7 +78,7 @@ struct QuizQuestionScreen: View {
 
                     Spacer().frame(height: 16)
 
-                    // Options
+                    // Options - tap to select and auto-advance
                     VStack(spacing: 12) {
                         ForEach(Array(question.options.enumerated()), id: \.element.id) { index, option in
                             QuizOptionCard(
@@ -88,9 +86,19 @@ struct QuizQuestionScreen: View {
                                 isSelected: selectedOption == option.id,
                                 accentColor: warmAmber
                             ) {
+                                guard !isAdvancing else { return }
                                 triggerHaptic(.light)
                                 withAnimation(.easeInOut(duration: 0.2)) {
                                     selectedOption = option.id
+                                }
+                                // Auto-advance after brief visual feedback
+                                let token = UUID()
+                                advanceToken = token
+                                isAdvancing = true
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                    guard advanceToken == token else { return }
+                                    triggerHaptic(.medium)
+                                    onContinue(option.id)
                                 }
                             }
                             .opacity(showContent ? 1 : 0)
@@ -100,28 +108,38 @@ struct QuizQuestionScreen: View {
                     }
                     .padding(.horizontal, 24)
 
-                    Spacer().frame(height: 120)
+                    Spacer().frame(height: 40)
                 }
             }
 
-            // Bottom button
-            OnboardingBottomButton(
-                title: "Continue",
-                isEnabled: canContinue,
-                accentColor: warmAmber
-            ) {
-                if let selected = selectedOption {
-                    triggerHaptic(.medium)
-                    onContinue(selected)
-                }
-            }
-            .opacity(showContent ? 1 : 0)
-            .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
+            Spacer()
+
+            // Anonymous note - outside ScrollView so it stays at bottom
+            Text("Your responses are anonymous")
+                .font(.system(size: 14))
+                .foregroundColor(mutedText)
+                .opacity(showContent ? 1 : 0)
+                .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
+                .padding(.bottom, 40)
         }
         .onAppear {
+            // Reset state when appearing (for back navigation)
+            selectedOption = nil
+            isAdvancing = false
+            advanceToken = nil
             withAnimation {
                 showContent = true
             }
+        }
+        .onDisappear {
+            advanceToken = nil
+            isAdvancing = false
+        }
+        .onChange(of: question.id) { _, _ in
+            // Reset state when question changes (view reused)
+            selectedOption = nil
+            isAdvancing = false
+            advanceToken = nil
         }
     }
 
