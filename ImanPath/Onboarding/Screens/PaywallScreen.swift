@@ -74,7 +74,7 @@ struct PaywallScreen: View {
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    Spacer().frame(height: 50)
+                    Spacer().frame(height: 20)
 
                     // Header
                     VStack(spacing: 12) {
@@ -101,43 +101,24 @@ struct PaywallScreen: View {
                     .offset(y: showContent ? 0 : 20)
                     .animation(.easeOut(duration: 0.5).delay(0.1), value: showContent)
 
-                    Spacer().frame(height: 32)
+                    Spacer().frame(height: 12)
 
-                    // Features list
-                    VStack(spacing: 14) {
-                        FeatureRow(icon: "checkmark.circle.fill", text: "Personalized recovery plan")
-                        FeatureRow(icon: "checkmark.circle.fill", text: "Daily Islamic guidance & reminders")
-                        FeatureRow(icon: "checkmark.circle.fill", text: "Emergency panic button")
-                        FeatureRow(icon: "checkmark.circle.fill", text: "Progress tracking & streaks")
-                        FeatureRow(icon: "checkmark.circle.fill", text: "AI-powered coach support")
-                    }
-                    .padding(.horizontal, 32)
+                    // Screenshot carousel - Show what they'll get
+                    PaywallScreenshotCarousel(
+                        accentViolet: accentViolet,
+                        sunriseGlow: sunriseGlow
+                    )
                     .opacity(showContent ? 1 : 0)
                     .offset(y: showContent ? 0 : 15)
                     .animation(.easeOut(duration: 0.5).delay(0.2), value: showContent)
 
-                    Spacer().frame(height: 32)
+                    Spacer().frame(height: 24)
 
                     // Pricing cards - Horizontal row with yearly highlighted
                     pricingSection
                         .opacity(showContent ? 1 : 0)
                         .offset(y: showContent ? 0 : 15)
                         .animation(.easeOut(duration: 0.5).delay(0.3), value: showContent)
-
-                    Spacer().frame(height: 24)
-
-                    // Free trial note
-                    HStack(spacing: 6) {
-                        Image(systemName: "gift.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(sunriseGlow)
-
-                        Text("Start with a 3-day free trial")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(textBody)
-                    }
-                    .opacity(showContent ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.4), value: showContent)
 
                     Spacer().frame(height: 24)
 
@@ -173,7 +154,7 @@ struct PaywallScreen: View {
                     .opacity(selectedProductID == nil ? 0.6 : 1)
                     .padding(.horizontal, 24)
                     .opacity(showContent ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
+                    .animation(.easeOut(duration: 0.4).delay(0.4), value: showContent)
 
                     // Reassurance text
                     HStack(spacing: 6) {
@@ -187,12 +168,12 @@ struct PaywallScreen: View {
                     }
                     .padding(.top, 12)
                     .opacity(showContent ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.6), value: showContent)
+                    .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
 
-                    Spacer().frame(height: 24)
+                    Spacer().frame(height: 20)
 
-                    // Bottom links
-                    VStack(spacing: 12) {
+                    // Bottom links - single line like Unchained
+                    HStack(spacing: 8) {
                         Button(action: {
                             triggerHaptic(.light)
                             Task {
@@ -203,38 +184,40 @@ struct PaywallScreen: View {
                             }
                         }) {
                             Text("Restore Purchases")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(accentViolet)
+                                .font(.system(size: 12))
+                                .foregroundColor(textMuted)
                         }
 
-                        HStack(spacing: 16) {
-                            Button(action: {
-                                if let url = URL(string: "https://zakaden.com/return/terms") {
-                                    UIApplication.shared.open(url)
-                                }
-                            }) {
-                                Text("Terms of Use")
-                                    .font(.system(size: 13))
-                                    .foregroundColor(textMuted)
-                            }
+                        Text("•")
+                            .font(.system(size: 12))
+                            .foregroundColor(textMuted.opacity(0.5))
 
-                            Text("•")
-                                .font(.system(size: 13))
+                        Button(action: {
+                            if let url = URL(string: "https://zakaden.com/return/terms") {
+                                UIApplication.shared.open(url)
+                            }
+                        }) {
+                            Text("Terms of Use")
+                                .font(.system(size: 12))
                                 .foregroundColor(textMuted)
+                        }
 
-                            Button(action: {
-                                if let url = URL(string: "https://zakaden.com/return/privacy") {
-                                    UIApplication.shared.open(url)
-                                }
-                            }) {
-                                Text("Privacy Policy")
-                                    .font(.system(size: 13))
-                                    .foregroundColor(textMuted)
+                        Text("•")
+                            .font(.system(size: 12))
+                            .foregroundColor(textMuted.opacity(0.5))
+
+                        Button(action: {
+                            if let url = URL(string: "https://zakaden.com/return/privacy") {
+                                UIApplication.shared.open(url)
                             }
+                        }) {
+                            Text("Privacy Policy")
+                                .font(.system(size: 12))
+                                .foregroundColor(textMuted)
                         }
                     }
                     .opacity(showContent ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.7), value: showContent)
+                    .animation(.easeOut(duration: 0.4).delay(0.6), value: showContent)
 
                     Spacer().frame(height: 120)
                 }
@@ -427,7 +410,7 @@ private struct CompactPricingCard: View {
     var onTap: () -> Void
 
     private var cardHeight: CGFloat {
-        isHighlighted ? 140 : 115
+        isHighlighted ? 120 : 115
     }
 
     var body: some View {
@@ -492,6 +475,193 @@ private struct CompactPricingCard: View {
             .scaleEffect(isSelected ? 1.03 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Paywall Screenshot Carousel (iPhone Mockup Style - like Tutorial)
+struct PaywallScreenshotCarousel: View {
+    let accentViolet: Color
+    let sunriseGlow: Color
+
+    @State private var currentIndex: Int = 0
+    @State private var autoAdvanceTimer: Timer?
+
+    // Screenshots to show
+    private let screenshots = [
+        "tutorial_home",
+        "tutorial_streak",
+        "tutorial_daily",
+        "tutorial_tools"
+    ]
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // iPhone mockup carousel
+            TabView(selection: $currentIndex) {
+                ForEach(0..<screenshots.count, id: \.self) { index in
+                    PaywallPhoneMockup(
+                        screenshotName: screenshots[index],
+                        accentViolet: accentViolet,
+                        sunriseGlow: sunriseGlow
+                    )
+                    .tag(index)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 262) // Compact height for paywall (252 + 10 for shadow)
+
+            // Pagination dots
+            HStack(spacing: 8) {
+                ForEach(0..<screenshots.count, id: \.self) { index in
+                    Circle()
+                        .fill(index == currentIndex ? accentViolet : accentViolet.opacity(0.25))
+                        .frame(width: 8, height: 8)
+                        .scaleEffect(index == currentIndex ? 1.0 : 0.85)
+                        .animation(.spring(response: 0.3), value: currentIndex)
+                }
+            }
+        }
+        .onAppear {
+            startAutoAdvance()
+        }
+        .onDisappear {
+            autoAdvanceTimer?.invalidate()
+            autoAdvanceTimer = nil
+        }
+    }
+
+    private func startAutoAdvance() {
+        autoAdvanceTimer = Timer.scheduledTimer(withTimeInterval: 3.5, repeats: true) { _ in
+            withAnimation(.easeInOut(duration: 0.5)) {
+                currentIndex = (currentIndex + 1) % screenshots.count
+            }
+        }
+    }
+}
+
+// MARK: - Paywall Phone Mockup (Same style as Tutorial but shorter + warm glow)
+private struct PaywallPhoneMockup: View {
+    let screenshotName: String
+    let accentViolet: Color
+    let sunriseGlow: Color
+
+    // iPhone dimensions - compact for paywall
+    private let phoneWidth: CGFloat = 180
+    private let phoneHeight: CGFloat = 320
+    private let bezelWidth: CGFloat = 5
+    private let cornerRadius: CGFloat = 36
+    private let screenCornerRadius: CGFloat = 31
+    private let dynamicIslandWidth: CGFloat = 70
+    private let dynamicIslandHeight: CGFloat = 22
+
+    // Container clips phone at bottom (shorter = more cropped)
+    private let containerHeight: CGFloat = 252
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                // Warm glow behind phone (matches paywall colors)
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                sunriseGlow.opacity(0.5),
+                                accentViolet.opacity(0.25),
+                                Color.clear
+                            ],
+                            center: .center,
+                            startRadius: 40,
+                            endRadius: 160
+                        )
+                    )
+                    .frame(width: 320, height: 320)
+                    .offset(y: 40)
+
+                // The iPhone device
+                ZStack {
+                    // Phone body (black frame)
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color.black)
+                        .frame(width: phoneWidth, height: phoneHeight)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.25),
+                                            Color.white.opacity(0.1),
+                                            Color.white.opacity(0.05)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 0.8
+                                )
+                        )
+                        .shadow(color: accentViolet.opacity(0.3), radius: 20, x: 0, y: 12)
+
+                    // Screen area
+                    RoundedRectangle(cornerRadius: screenCornerRadius)
+                        .fill(Color(hex: "0A1628"))
+                        .frame(
+                            width: phoneWidth - (bezelWidth * 2),
+                            height: phoneHeight - (bezelWidth * 2)
+                        )
+
+                    // Screenshot content
+                    PaywallScreenshotContent(name: screenshotName)
+                        .frame(
+                            width: phoneWidth - (bezelWidth * 2),
+                            height: phoneHeight - (bezelWidth * 2)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: screenCornerRadius))
+
+                    // Dynamic Island
+                    Capsule()
+                        .fill(Color.black)
+                        .frame(width: dynamicIslandWidth, height: dynamicIslandHeight)
+                        .offset(y: -(phoneHeight / 2) + bezelWidth + 16)
+                }
+                // Subtle 3D tilt
+                .rotation3DEffect(
+                    .degrees(3),
+                    axis: (x: 1, y: 0, z: 0),
+                    perspective: 0.8
+                )
+                .offset(y: 25) // Push down so bottom gets cropped
+            }
+        }
+        .frame(height: containerHeight) // Container clips overflow
+        .clipped()
+    }
+}
+
+// MARK: - Paywall Screenshot Content
+private struct PaywallScreenshotContent: View {
+    let name: String
+
+    var body: some View {
+        GeometryReader { geo in
+            if let _ = UIImage(named: name) {
+                Image(name)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+            } else {
+                // Placeholder
+                Color(hex: "0A1628")
+                    .overlay(
+                        VStack(spacing: 8) {
+                            Image(systemName: "iphone")
+                                .font(.system(size: 24))
+                                .foregroundColor(.white.opacity(0.3))
+                            Text(name)
+                                .font(.system(size: 10))
+                                .foregroundColor(.white.opacity(0.3))
+                        }
+                    )
+            }
+        }
     }
 }
 

@@ -8,7 +8,7 @@
 | Privacy Manifest | [ ] | Create PrivacyInfo.xcprivacy - required for @AppStorage/UserDefaults usage |
 | Privacy Policy URL | [ ] | Currently: zakaden.com/return/privacy |
 | Terms of Service URL | [ ] | Currently: zakaden.com/return/terms |
-| Free Trial UI vs Reality | [ ] | Either configure 3-day trial in ASC OR remove "free trial" text from PaywallScreen |
+| Free Trial UI vs Reality | [x] | Removed "free trial" text from PaywallScreen |
 
 ## Required Before Launch
 
@@ -50,6 +50,6 @@
 |------|---------|
 | `ImanPath/Assets.xcassets/AppIcon.appiconset/` | App icon (needs 1024x1024 image) |
 | `ImanPath/PrivacyInfo.xcprivacy` | Privacy manifest (needs to be created) |
-| `ImanPath/Onboarding/Screens/PaywallScreen.swift` | Free trial text at lines 200-210, 226 |
+| `ImanPath/Onboarding/Screens/PaywallScreen.swift` | Subscription paywall with pricing cards |
 | `Products.storekit` | Local StoreKit testing |
 | `docs/SUBSCRIPTIONS.md` | Subscription documentation |

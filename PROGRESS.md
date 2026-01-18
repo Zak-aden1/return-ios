@@ -374,6 +374,60 @@ App settings and preferences.
 - Delete All Data (with confirmation)
 - About: Version, Privacy Policy, Terms, Feedback
 
+### 19. Paywall Screen (`PaywallScreen.swift`)
+Subscription paywall shown before accessing the app.
+
+**Design:**
+- Light pink/cream gradient background (Fajr Dawn palette)
+- Mountain silhouettes at bottom
+- Sunrise glow effect
+
+**Components:**
+- Return logo at top
+- Headline: "Start Your Journey to Freedom"
+- Subtitle with social proof
+- iPhone mockup carousel showing app screenshots (4 screens)
+- 3 pricing cards: Weekly, Yearly (highlighted with "Save 80%"), Monthly
+- Per-day pricing psychology ($0.14/day vs $49.99/year)
+- CTA button: "Start Free Trial"
+- Trust signals: "Cancel anytime. No commitment."
+- Footer: Restore Purchases • Terms of Use • Privacy Policy
+
+**Technical:**
+- StoreKit 2 integration via `SubscriptionManager`
+- Auto-advancing screenshot carousel (3.5s interval)
+- Timer properly invalidated on view disappear (prevents crashes)
+- Staggered fade-in animations on load
+
+**Pricing Tiers:**
+| Plan | Daily | Total | Badge |
+|------|-------|-------|-------|
+| Weekly | $0.71/day | $4.99/week | - |
+| Yearly | $0.14/day | $49.99/year | Save 80% |
+| Monthly | $0.33/day | $9.99/month | - |
+
+### 20. Tutorial Screen (`TutorialView.swift`)
+Post-onboarding tutorial carousel introducing app features.
+
+**Design:**
+- Dark space background with star field
+- Realistic iPhone mockup with screenshots
+- Circular glow behind phone
+- 5-step carousel with pagination dots
+
+**Steps:**
+1. Welcome - "Here's how your journey begins"
+2. Progress - "Watch your streak grow"
+3. Daily Practice - "5 minutes a day"
+4. Support - "Your AI Coach and tools"
+5. Commitment - "Honor your Niyyah"
+
+**Components:**
+- `PhoneFrameView` - Realistic iPhone with bezels, dynamic island
+- `iPhoneDevice` - Phone frame with 3D tilt effect
+- `ScreenshotContent` - Loads actual screenshots or placeholders
+- `StarFieldView` - Animated star background
+
 ---
 
 ## Data Models
@@ -730,4 +784,4 @@ Centralized manager for all SwiftData operations:
 
 ---
 
-*Last updated: January 12, 2026*
+*Last updated: January 18, 2026*
