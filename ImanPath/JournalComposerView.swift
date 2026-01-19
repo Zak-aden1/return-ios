@@ -164,6 +164,7 @@ struct JournalComposerView: View {
         } else {
             // Create new entry
             _ = dataManager.createJournalEntry(content: trimmedContent, mood: selectedMood)
+            AnalyticsManager.shared.trackJournalEntryCreated()
         }
         dismiss()
     }

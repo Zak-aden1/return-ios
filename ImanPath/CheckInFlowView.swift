@@ -159,6 +159,13 @@ struct CheckInFlowView: View {
             gratitude: gratitudeText.isEmpty ? nil : gratitudeText,
             stayedClean: true  // Check-in implies staying clean
         )
+
+        // Track analytics
+        AnalyticsManager.shared.trackCheckinCompleted(
+            stayedClean: true,
+            urgeLevel: nil,
+            imanLevel: faithRating
+        )
     }
 
     private var progressValue: Double {

@@ -234,6 +234,10 @@ struct LessonDetailView: View {
         // Mark complete immediately
         hasMarkedComplete = true
         let reflection = reflectionText.isEmpty ? nil : reflectionText
+
+        // Track analytics
+        AnalyticsManager.shared.trackLessonCompleted(lessonDay: lesson.day)
+
         onComplete(reflection)
 
         // Show confetti

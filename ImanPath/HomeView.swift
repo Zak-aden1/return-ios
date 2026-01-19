@@ -162,7 +162,10 @@ struct HomeView: View {
             VStack {
                 Spacer()
                 BottomActionBar(
-                    onPanicTap: { showPanicView = true },
+                    onPanicTap: {
+                        AnalyticsManager.shared.trackPanicButtonPressed()
+                        showPanicView = true
+                    },
                     onChatTap: { showStreakCoach = true },
                     onCheckInTap: { showCheckIn = true },
                     onLessonTap: { showLessons = true }

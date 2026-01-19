@@ -30,8 +30,19 @@ struct OnboardingFlowView: View {
     @State private var selectedGoals: Set<String> = []
     @State private var selectedSymptoms: Set<String> = []
 
+    // Analytics guards
+    @State private var didTrackOnboardingStarted: Bool = false
+    @State private var didTrackQuizCompleted: Bool = false
+    @State private var didTrackCommitmentSigned: Bool = false
+    @State private var didTrackPaywallViewed: Bool = false
+    @State private var didTrackOnboardingCompleted: Bool = false
+
+    // Win-back paywall for transaction abandon
+    @State private var showWinBackPaywall: Bool = false
+
     // Colors
     private let warmAmber = Color(hex: "C4956A")
+    private let quizRecoveryScore: Int = 64
 
     private var progress: Double {
         // Quiz is steps 3-14 (12 questions including name)
@@ -225,6 +236,10 @@ struct OnboardingFlowView: View {
                     NameInputScreen(
                         onContinue: { name in
                             userName = name
+                            if !didTrackQuizCompleted {
+                                AnalyticsManager.shared.trackQuizCompleted(recoveryScore: quizRecoveryScore)
+                                didTrackQuizCompleted = true
+                            }
                             currentStep = 15
                         },
                         onBack: { currentStep = 13 },
@@ -308,6 +323,11 @@ struct OnboardingFlowView: View {
                         userName: userName,
                         onCommit: { goalDate in
                             // Save commitment to SwiftData and start streak
+                            if !didTrackCommitmentSigned {
+                                let daysUntilTarget = Calendar.current.dateComponents([.day], from: Date(), to: goalDate).day ?? 0
+                                AnalyticsManager.shared.trackCommitmentSigned(daysUntilTarget: max(0, daysUntilTarget))
+                                didTrackCommitmentSigned = true
+                            }
                             dataManager.updateUserName(userName)
                             dataManager.signCommitment(targetDate: goalDate)
                             currentStep = 25
@@ -359,13 +379,43 @@ struct OnboardingFlowView: View {
                         onSubscribe: {
                             // Mark onboarding complete - ContentView will auto-navigate to HomeView
                             dataManager.completeOnboarding()
+                            if !didTrackOnboardingCompleted {
+                                AnalyticsManager.shared.trackOnboardingCompleted()
+                                didTrackOnboardingCompleted = true
+                            }
                         },
                         onRestorePurchases: {
                             // Restore purchases and complete onboarding if valid subscription found
                             // TODO: Implement actual StoreKit restore logic
                             dataManager.completeOnboarding()
+                            if !didTrackOnboardingCompleted {
+                                AnalyticsManager.shared.trackOnboardingCompleted()
+                                didTrackOnboardingCompleted = true
+                            }
+                        },
+                        onDismiss: {
+                            // Transaction abandon - show win-back paywall
+                            showWinBackPaywall = true
                         }
                     )
+                    .fullScreenCover(isPresented: $showWinBackPaywall) {
+                        WinBackPaywallView(
+                            onPurchase: {
+                                // Successful purchase from win-back
+                                showWinBackPaywall = false
+                                dataManager.completeOnboarding()
+                                if !didTrackOnboardingCompleted {
+                                    AnalyticsManager.shared.trackOnboardingCompleted()
+                                    didTrackOnboardingCompleted = true
+                                }
+                            },
+                            onDismiss: {
+                                // Dismissed win-back - go back to prepaywall
+                                showWinBackPaywall = false
+                                currentStep = 29
+                            }
+                        )
+                    }
 
                 default:
                     // Placeholder for future steps (24+: Commitment intro, Commitment card, Paywall)
@@ -403,6 +453,12 @@ struct OnboardingFlowView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: currentStep)
+        .onAppear {
+            if !didTrackOnboardingStarted {
+                AnalyticsManager.shared.trackOnboardingStarted()
+                didTrackOnboardingStarted = true
+            }
+        }
     }
 }
 

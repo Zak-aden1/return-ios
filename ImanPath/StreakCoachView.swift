@@ -216,6 +216,9 @@ struct StreakCoachView: View {
             return
         }
 
+        // Track analytics
+        AnalyticsManager.shared.trackAICoachUsed()
+
         let dataManager = DataManager(modelContext: modelContext)
 
         // Add user message

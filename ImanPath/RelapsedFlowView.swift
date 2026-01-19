@@ -74,6 +74,9 @@ struct RelapsedFlowView: View {
     }
 
     private func resetStreak() {
+        // Track analytics before reset (while currentStreak still has previous value)
+        AnalyticsManager.shared.trackRelapse(previousStreak: currentStreak)
+
         let dataManager = DataManager(modelContext: modelContext)
         dataManager.resetStreak(reason: "relapse")
     }

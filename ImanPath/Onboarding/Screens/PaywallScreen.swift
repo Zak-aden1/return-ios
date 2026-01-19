@@ -13,6 +13,7 @@ import UIKit
 struct PaywallScreen: View {
     var onSubscribe: () -> Void
     var onRestorePurchases: () -> Void
+    var onDismiss: (() -> Void)? = nil  // Optional - for transaction abandon flow
 
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     @State private var selectedProductID: String?
@@ -20,6 +21,7 @@ struct PaywallScreen: View {
     @State private var isPurchasing: Bool = false
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
+    @State private var showCloseButton: Bool = false  // Delayed close button
 
     // Colors - Fajr Dawn palette
     private let bgTop = Color(hex: "FDF8F5")
@@ -71,6 +73,34 @@ struct PaywallScreen: View {
             )
             .offset(y: -100)
             .ignoresSafeArea()
+
+            // Delayed close button - appears after 5 seconds
+            if let onDismiss = onDismiss {
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            triggerHaptic(.light)
+                            onDismiss()
+                        }) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(Color(hex: "9A8A9E"))
+                                .frame(width: 32, height: 32)
+                                .background(
+                                    Circle()
+                                        .fill(Color(hex: "E8E0EC").opacity(0.9))
+                                )
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.top, 12)
+                        .opacity(showCloseButton ? 1 : 0)
+                        .animation(.easeInOut(duration: 0.4), value: showCloseButton)
+                    }
+                    Spacer()
+                }
+                .zIndex(100) // Ensure it's above everything
+            }
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
@@ -231,6 +261,18 @@ struct PaywallScreen: View {
             if selectedProductID == nil, let yearlyProduct = subscriptionManager.product(for: .yearly) {
                 selectedProductID = yearlyProduct.id
             }
+            // Track paywall view
+            AnalyticsManager.shared.trackPaywallViewed()
+            AnalyticsManager.shared.flush()
+
+            // Show close button after 5 seconds (only if onDismiss is provided)
+            if onDismiss != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                    withAnimation {
+                        showCloseButton = true
+                    }
+                }
+            }
         }
         .onChange(of: subscriptionManager.products) { _, products in
             // Select yearly by default when products load
@@ -350,6 +392,8 @@ struct PaywallScreen: View {
 
             if success {
                 triggerHaptic(.success)
+                AnalyticsManager.shared.trackSubscriptionStarted(plan: productID)
+                AnalyticsManager.shared.flush()
                 onSubscribe()
             }
         } catch {
@@ -710,9 +754,17 @@ struct PaywallMountainsView: View {
     }
 }
 
-#Preview {
+#Preview("Without Dismiss") {
     PaywallScreen(
         onSubscribe: {},
         onRestorePurchases: {}
+    )
+}
+
+#Preview("With Delayed Dismiss") {
+    PaywallScreen(
+        onSubscribe: {},
+        onRestorePurchases: {},
+        onDismiss: { print("Dismissed") }
     )
 }
