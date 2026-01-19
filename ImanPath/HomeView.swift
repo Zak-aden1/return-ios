@@ -115,8 +115,8 @@ struct HomeView: View {
 
                     // Daily Verse
                     DailyVerseCard(
-                        verse: "Verily, with hardship comes ease.",
-                        reference: "Quran 94:6"
+                        verse: DailyVerses.today.text,
+                        reference: DailyVerses.today.reference
                     )
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
