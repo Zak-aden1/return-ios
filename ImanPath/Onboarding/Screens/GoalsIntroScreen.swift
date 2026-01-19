@@ -139,8 +139,8 @@ struct GoalsIntroScreen: View {
                 dotAnimation = true
             }
 
-            // Auto-advance after 2.5 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            // Auto-advance after 3.5 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
                 onContinue()
             }
         }
