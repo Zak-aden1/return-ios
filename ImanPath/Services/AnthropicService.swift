@@ -13,6 +13,12 @@ struct CoachResponse: Codable {
     let reply: String
     let citations: [String]
     let suggestedAction: String?
+
+    init(reply: String, citations: [String] = [], suggestedAction: String? = nil) {
+        self.reply = reply
+        self.citations = citations
+        self.suggestedAction = suggestedAction
+    }
 }
 
 struct EdgeFunctionMessage: Codable {
@@ -51,47 +57,19 @@ class AnthropicService {
     // Supabase Edge Function URL
     private let edgeFunctionURL = URL(string: "https://vhrrlsadqppjnoxtkccn.supabase.co/functions/v1/coach")!
 
-    // Supabase anon key - safe to include in app (RLS protects data)
-    private var supabaseAnonKey: String? {
-        loadSupabaseConfig()
-    }
+    // Supabase anon key - public by design (RLS protects data, not this key)
+    // Same pattern as Firebase public API keys
+    private let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZocnJsc2FkcXBwam5veHRrY2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgxNDU3ODUsImV4cCI6MjA4MzcyMTc4NX0.-il0QDBmYSrW-ruVHNue9zDEA9B1kOv6W0pSgRggfD0"
 
-    private func loadSupabaseConfig() -> String? {
-        // Load from Secrets.xcconfig
-        let possiblePaths = [
-            Bundle.main.bundlePath + "/../../Secrets.xcconfig",
-            Bundle.main.resourcePath.map { $0 + "/Secrets.xcconfig" },
-            "/Users/zak/Code/real-projects/ImanPath/Secrets.xcconfig"
-        ].compactMap { $0 }
+    // MARK: - Public API (Streaming)
 
-        for path in possiblePaths {
-            if let contents = try? String(contentsOfFile: path, encoding: .utf8) {
-                for line in contents.components(separatedBy: .newlines) {
-                    let trimmed = line.trimmingCharacters(in: .whitespaces)
-                    if trimmed.hasPrefix("SUPABASE_ANON_KEY") {
-                        let parts = trimmed.components(separatedBy: "=")
-                        if parts.count >= 2 {
-                            return parts.dropFirst().joined(separator: "=").trimmingCharacters(in: .whitespaces)
-                        }
-                    }
-                }
-            }
-        }
-        return nil
-    }
-
-    // MARK: - Public API
-
-    /// Send a message to Coach via Supabase Edge Function
-    func sendMessage(
+    /// Send a message and stream the response chunk by chunk
+    func sendMessageStreaming(
         userMessage: String,
         conversationHistory: [ChatMessage],
-        dataPack: String
-    ) async throws -> CoachResponse {
-        guard let anonKey = supabaseAnonKey, !anonKey.isEmpty else {
-            throw CoachError.missingConfig
-        }
-
+        dataPack: String,
+        onChunk: @escaping (String) -> Void
+    ) async throws {
         // Build messages array for conversation history
         var messages: [[String: String]] = []
 
@@ -99,7 +77,83 @@ class AnthropicService {
         for msg in recentHistory {
             messages.append([
                 "role": msg.sender == .user ? "user" : "assistant",
-                "content": msg.sender == .assistant ? wrapInJSON(msg) : msg.content
+                "content": msg.content
+            ])
+        }
+
+        // Build request body with streaming enabled
+        let requestBody: [String: Any] = [
+            "userMessage": userMessage,
+            "messages": messages,
+            "dataPack": dataPack,
+            "stream": true
+        ]
+
+        // Create request
+        var request = URLRequest(url: edgeFunctionURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+
+        // Make streaming request
+        let (bytes, response) = try await URLSession.shared.bytes(for: request)
+
+        // Check HTTP response
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw CoachError.invalidResponse
+        }
+
+        if httpResponse.statusCode == 429 {
+            throw CoachError.rateLimited
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw CoachError.apiError("Status \(httpResponse.statusCode)")
+        }
+
+        // Parse SSE stream
+        for try await line in bytes.lines {
+            // SSE format: "data: {...}"
+            guard line.hasPrefix("data: ") else { continue }
+
+            let jsonString = String(line.dropFirst(6))
+
+            // Skip [DONE] or empty
+            guard jsonString != "[DONE]", !jsonString.isEmpty else { continue }
+
+            // Parse JSON
+            guard let data = jsonString.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                continue
+            }
+
+            // Extract text delta from content_block_delta event
+            if let type = json["type"] as? String,
+               type == "content_block_delta",
+               let delta = json["delta"] as? [String: Any],
+               let text = delta["text"] as? String {
+                onChunk(text)
+            }
+        }
+    }
+
+    // MARK: - Public API (Non-Streaming - Legacy)
+
+    /// Send a message to Coach via Supabase Edge Function (non-streaming)
+    func sendMessage(
+        userMessage: String,
+        conversationHistory: [ChatMessage],
+        dataPack: String
+    ) async throws -> CoachResponse {
+        // Build messages array for conversation history
+        var messages: [[String: String]] = []
+
+        let recentHistory = conversationHistory.suffix(10)
+        for msg in recentHistory {
+            messages.append([
+                "role": msg.sender == .user ? "user" : "assistant",
+                "content": msg.content
             ])
         }
 
@@ -114,7 +168,7 @@ class AnthropicService {
         var request = URLRequest(url: edgeFunctionURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
         request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
 
         // Send request
@@ -130,47 +184,28 @@ class AnthropicService {
         }
 
         if httpResponse.statusCode != 200 {
-            if let errorBody = String(data: data, encoding: .utf8) {
-                // Try to parse error message from response
-                if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let errorMessage = errorJson["message"] as? String {
-                    throw CoachError.apiError(errorMessage)
-                }
-                throw CoachError.apiError("Status \(httpResponse.statusCode): \(errorBody)")
+            if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let errorMessage = errorJson["message"] as? String {
+                throw CoachError.apiError(errorMessage)
             }
             throw CoachError.apiError("Status \(httpResponse.statusCode)")
         }
 
-        // Parse response - Edge Function returns CoachResponse directly
+        // Parse response
         do {
-            let response = try JSONDecoder().decode(CoachResponse.self, from: data)
-            return response
-        } catch {
-            if let responseText = String(data: data, encoding: .utf8) {
-                #if DEBUG
-                print("⚠️ Failed to parse response: \(responseText)")
-                #endif
+            // Try full CoachResponse first (legacy)
+            if let response = try? JSONDecoder().decode(CoachResponse.self, from: data) {
+                return response
+            }
+            // Try simple reply format
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let reply = json["reply"] as? String {
+                return CoachResponse(reply: reply)
             }
             throw CoachError.invalidResponse
+        } catch {
+            throw CoachError.invalidResponse
         }
-    }
-
-    // MARK: - Private Helpers
-
-    /// Wrap a previous assistant message in JSON format for context
-    private func wrapInJSON(_ message: ChatMessage) -> String {
-        let response = CoachResponse(
-            reply: message.content,
-            citations: message.citations,
-            suggestedAction: message.suggestedAction
-        )
-        if let data = try? JSONEncoder().encode(response),
-           let json = String(data: data, encoding: .utf8) {
-            return json
-        }
-        return """
-        {"reply": "\(message.content.replacingOccurrences(of: "\"", with: "\\\""))", "citations": [], "suggestedAction": null}
-        """
     }
 }
 
@@ -181,7 +216,7 @@ extension AnthropicService {
     /// Create a mock response for previews and testing
     static func mockResponse(
         reply: String = "I understand you're struggling. Your recent check-in shows your mood has been low. Remember, you've made it through tough moments before. Try the breathing exercise now - it helped you on Jan 8.",
-        citations: [String] = ["checkin:2026-01-10", "journal:abc12345"],
+        citations: [String] = [],
         suggestedAction: String? = "breathing"
     ) -> CoachResponse {
         CoachResponse(

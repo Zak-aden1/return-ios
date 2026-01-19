@@ -232,27 +232,40 @@ struct StreakCoachView: View {
         let (dataPack, map) = dataPacker.buildDataPack()
         citationMap = map
 
-        // Send to API
+        // Send to API with streaming
         Task {
             do {
-                let response = try await anthropicService.sendMessage(
+                var fullResponse = ""
+                var assistantMessage: ChatMessage?
+
+                try await anthropicService.sendMessageStreaming(
                     userMessage: trimmedText,
                     conversationHistory: Array(sortedMessages.dropLast()),  // Exclude the message we just added
                     dataPack: dataPack
-                )
+                ) { chunk in
+                    // Called on each text chunk received
+                    fullResponse += chunk
 
-                // Add assistant message
+                    Task { @MainActor in
+                        if let message = assistantMessage {
+                            // Update existing message with new content
+                            dataManager.updateMessageContent(message, content: fullResponse)
+                        } else {
+                            // First chunk - create the message and hide typing indicator
+                            assistantMessage = dataManager.addMessageToConversation(
+                                conv,
+                                sender: .assistant,
+                                content: fullResponse
+                            )
+                            isLoading = false
+                            scrollToBottom()
+                        }
+                    }
+                }
+
+                // Streaming complete - record the message
                 await MainActor.run {
-                    let _ = dataManager.addMessageToConversation(
-                        conv,
-                        sender: .assistant,
-                        content: response.reply,
-                        citations: response.citations,
-                        suggestedAction: response.suggestedAction
-                    )
-
                     rateLimiter.recordMessage()
-                                        isLoading = false
                     scrollToBottom()
                 }
             } catch {
@@ -325,23 +338,33 @@ struct StreakCoachView: View {
 
         Task {
             do {
-                let response = try await anthropicService.sendMessage(
+                var fullResponse = ""
+                var assistantMessage: ChatMessage?
+
+                try await anthropicService.sendMessageStreaming(
                     userMessage: userText,
                     conversationHistory: Array(sortedMessages.dropLast()),
                     dataPack: dataPack
-                )
+                ) { chunk in
+                    fullResponse += chunk
+
+                    Task { @MainActor in
+                        if let message = assistantMessage {
+                            dataManager.updateMessageContent(message, content: fullResponse)
+                        } else {
+                            assistantMessage = dataManager.addMessageToConversation(
+                                conv,
+                                sender: .assistant,
+                                content: fullResponse
+                            )
+                            isLoading = false
+                            scrollToBottom()
+                        }
+                    }
+                }
 
                 await MainActor.run {
-                    let _ = dataManager.addMessageToConversation(
-                        conv,
-                        sender: .assistant,
-                        content: response.reply,
-                        citations: response.citations,
-                        suggestedAction: response.suggestedAction
-                    )
-
                     rateLimiter.recordMessage()
-                                        isLoading = false
                     scrollToBottom()
                 }
             } catch {

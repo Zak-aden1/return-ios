@@ -1,5 +1,5 @@
 // Supabase Edge Function for ImanPath Coach
-// Proxies requests to Anthropic API with server-side API key
+// Proxies requests to Anthropic API with streaming support
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
@@ -13,13 +13,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 }
 
-// System prompt builder
+// System prompt builder (simplified for streaming - plain text response)
 function buildSystemPrompt(dataPack: string): string {
-  return `You are Streak Coach, a compassionate companion for someone on their recovery journey from pornography addiction. You are part of ImanPath, an Islamic recovery app.
+  return `You are Streak Coach, a compassionate companion for someone on their recovery journey from pornography addiction. You are part of Return, an Islamic recovery app.
 
 ## Your Role
 - Ground every response in the user's actual data (provided below)
-- Reference specific entries using the citation IDs provided
 - Always end with ONE concrete action they can take right now
 - Adjust your tone based on their streak day
 - Provide Islamic perspective naturally, not forcefully
@@ -32,48 +31,14 @@ function buildSystemPrompt(dataPack: string): string {
 
 ## Response Rules
 1. Keep responses concise (2-3 short paragraphs max)
-2. Cite specific data using the IDs like [journal:abc12345] or [checkin:2026-01-10]
-3. End with ONE action suggestion
-4. Include brief Islamic encouragement if natural (verse or reminder)
-5. NEVER fabricate data - only reference what's in the context
-6. If user shows signs of crisis, include: "If you're in crisis, please reach out to a mental health professional."
+2. End with ONE action suggestion
+3. Include brief Islamic encouragement if natural (verse or reminder)
+4. NEVER fabricate data - only reference what's in the context
+5. If user shows signs of crisis, include: "If you're in crisis, please reach out to a mental health professional."
+6. Respond in plain text, conversational style. No JSON formatting.
 
-## Actions You Can Suggest
-- breathing: 4-7-8 breathing exercise
-- journal: Write in journal
-- checkin: Do daily check-in
-- panic: Open panic button tools
-- dua: Read duas for strength
-- none: No specific action needed
-
-## Required Response Format
-You MUST respond with valid JSON only. Do not include any text before or after the JSON:
-{
-  "reply": "Your message here with natural citation references",
-  "citations": ["journal:abc12345", "checkin:2026-01-10"],
-  "suggestedAction": "breathing"
-}
-
-## User's Current Data
+## USER'S CURRENT DATA
 ${dataPack}`
-}
-
-// Parse Claude's response (handle markdown code blocks)
-function parseCoachResponse(text: string): { reply: string; citations: string[]; suggestedAction: string | null } {
-  let cleanedText = text.trim()
-
-  // Remove markdown code blocks if present
-  if (cleanedText.startsWith("```json")) {
-    cleanedText = cleanedText.slice(7)
-  } else if (cleanedText.startsWith("```")) {
-    cleanedText = cleanedText.slice(3)
-  }
-  if (cleanedText.endsWith("```")) {
-    cleanedText = cleanedText.slice(0, -3)
-  }
-  cleanedText = cleanedText.trim()
-
-  return JSON.parse(cleanedText)
 }
 
 Deno.serve(async (req) => {
@@ -94,7 +59,7 @@ Deno.serve(async (req) => {
     }
 
     // Parse request body
-    const { messages, dataPack, userMessage } = await req.json()
+    const { messages, dataPack, userMessage, stream } = await req.json()
 
     if (!userMessage || !dataPack) {
       return new Response(
@@ -120,9 +85,10 @@ Deno.serve(async (req) => {
       max_tokens: MAX_TOKENS,
       system: buildSystemPrompt(dataPack),
       messages: anthropicMessages,
+      stream: stream === true, // Enable streaming if requested
     }
 
-    console.log("Calling Anthropic API...")
+    console.log(`Calling Anthropic API (stream: ${stream === true})...`)
 
     // Call Anthropic API
     const anthropicResponse = await fetch(ANTHROPIC_API_URL, {
@@ -153,7 +119,20 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Parse Anthropic response
+    // If streaming, pass through the SSE response
+    if (stream === true) {
+      return new Response(anthropicResponse.body, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+        },
+      })
+    }
+
+    // Non-streaming: parse and return full response
     const anthropicData = await anthropicResponse.json()
     const text = anthropicData.content?.[0]?.text
 
@@ -165,14 +144,11 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Parse the JSON response from Claude
-    const coachResponse = parseCoachResponse(text)
-
     console.log("Successfully processed coach request")
 
-    // Return success response
+    // Return plain text response wrapped in simple JSON
     return new Response(
-      JSON.stringify(coachResponse),
+      JSON.stringify({ reply: text }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     )
 

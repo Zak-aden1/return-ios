@@ -17,6 +17,7 @@
 		3128FC1E2F1A9A4D00A2194D /* clapping_hands_animation.json in Resources */ = {isa = PBXBuildFile; fileRef = 3128FC1D2F1A9A4D00A2194D /* clapping_hands_animation.json */; };
 		3128FCA12F1BD00D00A2194D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3128FCA02F1BD00D00A2194D /* StoreKit.framework */; };
 		3128FCA72F1BD86400A2194D /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 3128FCA62F1BD86400A2194D /* Products.storekit */; };
+		3128FD782F1DA90C00A2194D /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3128FD772F1DA90C00A2194D /* Secrets.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		3128FC1D2F1A9A4D00A2194D /* clapping_hands_animation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = clapping_hands_animation.json; sourceTree = "<group>"; };
 		3128FCA02F1BD00D00A2194D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		3128FCA62F1BD86400A2194D /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
+		3128FD772F1DA90C00A2194D /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -112,6 +114,7 @@
 				3128FC1B2F1A927200A2194D /* progress_chart_animation.json */,
 				3128FC1D2F1A9A4D00A2194D /* clapping_hands_animation.json */,
 				3128FC9F2F1BD00D00A2194D /* Frameworks */,
+				3128FD772F1DA90C00A2194D /* Secrets.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -264,6 +267,7 @@
 				3128FC1E2F1A9A4D00A2194D /* clapping_hands_animation.json in Resources */,
 				3128FC162F1A790A00A2194D /* plant_growing_animation.json in Resources */,
 				3128FCA72F1BD86400A2194D /* Products.storekit in Resources */,
+				3128FD782F1DA90C00A2194D /* Secrets.xcconfig in Resources */,
 				3128FC102F19C8D700A2194D /* brain_animation.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -324,6 +328,7 @@
 /* Begin XCBuildConfiguration section */
 		3128E4C82F10776E00C1ACD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3128FD772F1DA90C00A2194D /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -385,6 +390,7 @@
 		};
 		3128E4C92F10776E00C1ACD8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3128FD772F1DA90C00A2194D /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -438,6 +444,7 @@
 		};
 		3128E4CB2F10776E00C1ACD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3128FD772F1DA90C00A2194D /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -451,7 +458,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "ImanPath uses the camera to help you reflect during moments of struggle.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -482,6 +488,7 @@
 		};
 		3128E4CC2F10776E00C1ACD8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3128FD772F1DA90C00A2194D /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -495,7 +502,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "ImanPath uses the camera to help you reflect during moments of struggle.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

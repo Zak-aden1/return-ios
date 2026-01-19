@@ -444,6 +444,11 @@ class DataManager {
         save()
     }
 
+    func updateMessageContent(_ message: ChatMessage, content: String) {
+        message.content = content
+        // Don't save on every chunk - let SwiftData batch updates
+    }
+
     func deleteMessage(_ message: ChatMessage) {
         modelContext.delete(message)
         save()

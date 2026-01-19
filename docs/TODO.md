@@ -15,7 +15,7 @@
 | Item | Status | Notes |
 |------|--------|-------|
 | Tutorial Screens | [ ] | Need mockups/implementation |
-| New Anthropic API Key | [ ] | Old key was exposed on GitHub - generate new one |
+| New Anthropic API Key | [x] | Generated new key, stored in Supabase secrets |
 | Free Trial in ASC | [ ] | Optional: Add introductory offer in App Store Connect |
 
 ## App Store Connect Metadata
