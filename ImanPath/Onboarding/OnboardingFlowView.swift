@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-
 struct OnboardingFlowView: View {
     @Environment(\.modelContext) private var modelContext
 
@@ -194,7 +193,12 @@ struct OnboardingFlowView: View {
             Group {
                 switch currentStep {
                 case 1:
-                    WelcomeScreen(onContinue: { currentStep = 3 })
+                    WelcomeScreen(onContinue: {
+                        let transaction = Transaction(animation: nil)
+                        withTransaction(transaction) {
+                            currentStep = 3
+                        }
+                    })
 
                 case 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13:
                     // Quiz questions (11 questions, tap to advance)
@@ -397,12 +401,8 @@ struct OnboardingFlowView: View {
                     }
                 }
             }
-            .transition(.asymmetric(
-                insertion: .move(edge: .trailing).combined(with: .opacity),
-                removal: .move(edge: .leading).combined(with: .opacity)
-            ))
         }
-        .animation(.easeInOut(duration: 0.35), value: currentStep)
+        .animation(.easeInOut(duration: 0.25), value: currentStep)
     }
 }
 

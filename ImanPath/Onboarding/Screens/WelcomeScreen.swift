@@ -8,13 +8,13 @@
 
 import SwiftUI
 import UIKit
-
 struct WelcomeScreen: View {
     var onContinue: () -> Void
     @State private var showContent: Bool = false
     @State private var mountainsOffset: CGFloat = 50
     @State private var glowPulse: Bool = false
     @State private var buttonGlow: Bool = false
+    @State private var hasStartedQuiz: Bool = false
 
     // Colors - Deep spiritual purple/navy palette
     private let bgTop = Color(hex: "1A1033")          // Deep purple-black
@@ -50,20 +50,45 @@ struct WelcomeScreen: View {
             .ignoresSafeArea()
 
             // Mountain scene at bottom
-            VStack {
-                Spacer()
-                WelcomeMountainScene(
-                    mountainBack: mountainBack,
-                    mountainMid: mountainMid,
-                    mountainFront: mountainFront,
-                    sunriseGlow: sunriseGlow,
-                    sunrisePink: sunrisePink,
-                    glowPulse: glowPulse
-                )
-                .frame(height: 380)
-                .offset(y: mountainsOffset)
+            if !hasStartedQuiz {
+                VStack {
+                    Spacer()
+                    WelcomeMountainScene(
+                        mountainBack: mountainBack,
+                        mountainMid: mountainMid,
+                        mountainFront: mountainFront,
+                        sunriseGlow: sunriseGlow,
+                        sunrisePink: sunrisePink,
+                        glowPulse: glowPulse
+                    )
+                    .frame(height: 380)
+                    .offset(y: mountainsOffset)
+                }
+                .ignoresSafeArea()
             }
-            .ignoresSafeArea()
+
+            // Prewarm first quiz screen to avoid first-frame stall
+            if !hasStartedQuiz {
+                QuizQuestionScreen(
+                    question: QuizQuestion(
+                        id: "gender",
+                        question: "What is your gender?",
+                        subtitle: nil,
+                        options: [
+                            QuizOption(id: "male", text: "Male"),
+                            QuizOption(id: "female", text: "Female"),
+                            QuizOption(id: "prefer_not_say", text: "Prefer not to say")
+                        ]
+                    ),
+                    progress: 0,
+                    onContinue: { _ in },
+                    onBack: {},
+                    prewarm: true
+                )
+                .opacity(0)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+            }
 
             // Content
             VStack(spacing: 0) {
@@ -138,6 +163,7 @@ struct WelcomeScreen: View {
                 // CTA Button - White/cream style with breathing glow
                 Button(action: {
                     triggerHaptic(.medium)
+                    hasStartedQuiz = true
                     onContinue()
                 }) {
                     HStack(spacing: 8) {
@@ -179,6 +205,7 @@ struct WelcomeScreen: View {
 
             // Start glow pulse
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                guard !hasStartedQuiz else { return }
                 withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                     glowPulse = true
                 }
@@ -186,6 +213,7 @@ struct WelcomeScreen: View {
 
             // Start button glow after it appears
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                guard !hasStartedQuiz else { return }
                 withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
                     buttonGlow = true
                 }

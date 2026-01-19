@@ -32,6 +32,7 @@ struct QuizQuestionScreen: View {
     let progress: Double
     var onContinue: (String) -> Void
     var onBack: () -> Void
+    var prewarm: Bool = false
 
     @State private var selectedOption: String? = nil
     @State private var showContent: Bool = false
@@ -49,8 +50,6 @@ struct QuizQuestionScreen: View {
                 progress: progress,
                 onBack: onBack
             )
-            .opacity(showContent ? 1 : 0)
-            .animation(.easeOut(duration: 0.4).delay(0.1), value: showContent)
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
@@ -72,15 +71,12 @@ struct QuizQuestionScreen: View {
                         }
                     }
                     .padding(.horizontal, 24)
-                    .opacity(showContent ? 1 : 0)
-                    .offset(y: showContent ? 0 : 15)
-                    .animation(.easeOut(duration: 0.5).delay(0.2), value: showContent)
 
                     Spacer().frame(height: 16)
 
                     // Options - tap to select and auto-advance
                     VStack(spacing: 12) {
-                        ForEach(Array(question.options.enumerated()), id: \.element.id) { index, option in
+                        ForEach(question.options) { option in
                             QuizOptionCard(
                                 option: option,
                                 isSelected: selectedOption == option.id,
@@ -101,9 +97,6 @@ struct QuizQuestionScreen: View {
                                     onContinue(option.id)
                                 }
                             }
-                            .opacity(showContent ? 1 : 0)
-                            .offset(y: showContent ? 0 : 20)
-                            .animation(.easeOut(duration: 0.4).delay(0.3 + Double(index) * 0.06), value: showContent)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -118,18 +111,16 @@ struct QuizQuestionScreen: View {
             Text("Your responses are anonymous")
                 .font(.system(size: 14))
                 .foregroundColor(mutedText)
-                .opacity(showContent ? 1 : 0)
-                .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
                 .padding(.bottom, 40)
         }
+        .opacity(showContent ? 1 : 0)
+        .animation(.easeOut(duration: 0.2), value: showContent)
         .onAppear {
             // Reset state when appearing (for back navigation)
             selectedOption = nil
             isAdvancing = false
             advanceToken = nil
-            withAnimation {
-                showContent = true
-            }
+            showContent = !prewarm
         }
         .onDisappear {
             advanceToken = nil
@@ -140,6 +131,11 @@ struct QuizQuestionScreen: View {
             selectedOption = nil
             isAdvancing = false
             advanceToken = nil
+            if prewarm {
+                showContent = false
+            } else {
+                showContent = true
+            }
         }
     }
 
