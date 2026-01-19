@@ -164,11 +164,8 @@ struct PaywallScreen: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .scaleEffect(0.9)
                             } else {
-                                Text("Start Free Trial")
+                                Text("Start My Journey Today 🙌")
                                     .font(.system(size: 17, weight: .semibold))
-
-                                Image(systemName: "arrow.right")
-                                    .font(.system(size: 14, weight: .semibold))
                             }
                         }
                         .foregroundColor(.white)
