@@ -9,15 +9,13 @@ import SwiftUI
 
 struct SplashScreen: View {
     @State private var showContent = false
-    @State private var glowPulse = false
     @State private var starOpacity: [Double] = Array(repeating: 0.0, count: 20)
 
     var onComplete: () -> Void
 
-    // Fajr Dawn palette
+    // Night sky palette
     private let bgTop = Color(hex: "0A1628")
     private let bgBottom = Color(hex: "0F1D32")
-    private let sunriseGlow = Color(hex: "F6C177")
     private let textMuted = Color(hex: "8A9BAE")
 
     var body: some View {
@@ -42,16 +40,16 @@ struct SplashScreen: View {
             }
             .ignoresSafeArea()
 
-            // Radial glow behind logo - more pronounced
+            // Subtle white glow behind logo - barely perceptible
             RadialGradient(
                 colors: [
-                    sunriseGlow.opacity(glowPulse ? 0.20 : 0.12),
-                    sunriseGlow.opacity(0.05),
+                    Color.white.opacity(0.06),
+                    Color.white.opacity(0.02),
                     Color.clear
                 ],
                 center: .center,
-                startRadius: 30,
-                endRadius: 180
+                startRadius: 20,
+                endRadius: 120
             )
             .offset(y: -40)
             .ignoresSafeArea()
@@ -63,40 +61,40 @@ struct SplashScreen: View {
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: 50)
+                    .frame(height: 70)
                     .foregroundColor(.white)
 
                 // Verse + Reference grouped
-                VStack(spacing: 16) {
-                    Text("Allah does not burden a soul\nbeyond its capacity.")
-                        .font(.system(size: 22, weight: .regular, design: .serif))
-                        .foregroundColor(.white.opacity(0.95))
+                VStack(spacing: 12) {
+                    Text("Allah does not burden a soul\nbeyond what it can bear.")
+                        .font(.system(size: 18, weight: .light, design: .serif))
+                        .foregroundColor(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
-                        .lineSpacing(6)
+                        .lineSpacing(5)
 
                     Text("Surah Al-Baqarah · 2:286")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(textMuted)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(textMuted.opacity(0.8))
                         .tracking(0.5)
                 }
 
-                // Loading dots - subtle pulse, no bounce
+                // Loading dots - subtle pulse, neutral color
                 HStack(spacing: 6) {
                     ForEach(0..<3, id: \.self) { index in
                         Circle()
-                            .fill(sunriseGlow)
-                            .frame(width: 6, height: 6)
-                            .opacity(showContent ? 0.9 : 0.4)
+                            .fill(Color.white)
+                            .frame(width: 5, height: 5)
+                            .opacity(showContent ? 0.6 : 0.25)
                             .animation(
                                 Animation
-                                    .easeInOut(duration: 0.7)
+                                    .easeInOut(duration: 0.8)
                                     .repeatForever(autoreverses: true)
                                     .delay(Double(index) * 0.2),
                                 value: showContent
                             )
                     }
                 }
-                .padding(.top, 20)
+                .padding(.top, 24)
             }
             .padding(.horizontal, 40)
             .opacity(showContent ? 1 : 0)
@@ -142,13 +140,8 @@ struct SplashScreen: View {
             showContent = true
         }
 
-        // Start glow pulse
-        withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
-            glowPulse = true
-        }
-
         // Complete and transition
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
             onComplete()
         }
     }
