@@ -16,6 +16,11 @@ struct CommitmentCardScreen: View {
     @State private var showContent: Bool = false
     @State private var hasCommitted: Bool = false
     @State private var cardScale: CGFloat = 1.0
+    @State private var holdProgress: CGFloat = 0
+    @State private var isHolding: Bool = false
+    @State private var cardGlow: Bool = false
+
+    private let holdDuration: Double = 1.5 // Shorter than pledges (2.0s)
 
     // Colors
     private let bgColor = Color(hex: "0A1628")
@@ -194,7 +199,8 @@ struct CommitmentCardScreen: View {
                                     lineWidth: 1
                                 )
                         )
-                        .shadow(color: warmAmber.opacity(0.15), radius: 30, x: 0, y: 10)
+                        .shadow(color: warmAmber.opacity(cardGlow ? 0.6 : 0.15), radius: cardGlow ? 50 : 30, x: 0, y: 10)
+                        .animation(.easeInOut(duration: 0.4), value: cardGlow)
                 )
                 .padding(.horizontal, 24)
                 .scaleEffect(cardScale)
@@ -204,48 +210,64 @@ struct CommitmentCardScreen: View {
 
                 Spacer()
 
-                // Commit button
-                Button(action: {
-                    triggerHaptic(.heavy)
+                // Hold-to-commit button
+                ZStack {
+                    // Background
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(hasCommitted ? Color(hex: "10B981") : warmAmber)
 
-                    // Animate card
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                        cardScale = 1.05
-                    }
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            cardScale = 1.0
-                            hasCommitted = true
+                    // Progress fill (only when not committed)
+                    if !hasCommitted {
+                        GeometryReader { geometry in
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(Color.white.opacity(0.3))
+                                .frame(width: geometry.size.width * holdProgress)
+                                .animation(.linear(duration: 0.05), value: holdProgress)
                         }
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
                     }
 
-                    // Proceed after animation
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                        onCommit(goalDate)
-                    }
-                }) {
+                    // Text
                     HStack(spacing: 12) {
                         if hasCommitted {
                             Image(systemName: "checkmark")
                                 .font(.system(size: 18, weight: .bold))
                         }
 
-                        Text(hasCommitted ? "Committed" : "I Commit")
+                        Text(hasCommitted ? "Sealed" : (isHolding ? "Keep Holding..." : "Hold to Seal"))
                             .font(.system(size: 18, weight: .bold))
+
+                        if !hasCommitted && !isHolding {
+                            Text("✋")
+                                .font(.system(size: 20))
+                        } else if isHolding && !hasCommitted {
+                            Text("✊")
+                                .font(.system(size: 20))
+                        }
                     }
                     .foregroundColor(bgColor)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 60)
-                    .background(
-                        RoundedRectangle(cornerRadius: 30)
-                            .fill(
-                                hasCommitted
-                                    ? Color(hex: "10B981") // Green when committed
-                                    : warmAmber
-                            )
-                    )
+                    .animation(.easeInOut(duration: 0.2), value: isHolding)
+                    .animation(.easeInOut(duration: 0.2), value: hasCommitted)
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: 60)
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { _ in
+                            if !isHolding && !hasCommitted {
+                                isHolding = true
+                                startHoldTimer()
+                            }
+                        }
+                        .onEnded { _ in
+                            isHolding = false
+                            if holdProgress < 1.0 && !hasCommitted {
+                                withAnimation(.easeOut(duration: 0.2)) {
+                                    holdProgress = 0
+                                }
+                            }
+                        }
+                )
                 .disabled(hasCommitted)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
@@ -273,6 +295,49 @@ struct CommitmentCardScreen: View {
     private func triggerHaptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let generator = UIImpactFeedbackGenerator(style: style)
         generator.impactOccurred()
+    }
+
+    private func startHoldTimer() {
+        let interval: Double = 0.02
+        let increment = interval / holdDuration
+
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
+            if isHolding && holdProgress < 1.0 {
+                holdProgress += increment
+
+                // Haptic feedback at intervals
+                if Int(holdProgress * 100) % 33 == 0 {
+                    triggerHaptic(.light)
+                }
+
+                if holdProgress >= 1.0 {
+                    timer.invalidate()
+                    holdProgress = 1.0
+                    triggerHaptic(.heavy)
+
+                    // Celebration sequence
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        cardScale = 1.05
+                        cardGlow = true
+                        hasCommitted = true
+                    }
+
+                    // Card settles back
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            cardScale = 1.0
+                        }
+                    }
+
+                    // Auto-transition after celebration moment
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        onCommit(goalDate)
+                    }
+                }
+            } else if !isHolding {
+                timer.invalidate()
+            }
+        }
     }
 }
 

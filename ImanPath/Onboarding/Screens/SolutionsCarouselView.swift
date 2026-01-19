@@ -310,7 +310,6 @@ struct SolutionLottieView: View {
     let accentColor: Color
     let size: CGFloat
 
-    @State private var useFallback: Bool = false
     @State private var isHovering: Bool = false
 
     // Files that should be frozen (not animated) with hover effect
@@ -322,31 +321,24 @@ struct SolutionLottieView: View {
 
     var body: some View {
         Group {
-            if useFallback {
+            if LottieAnimation.named(lottieFile) != nil {
+                // Lottie animation exists
+                LottieView(animation: .named(lottieFile))
+                    .playbackMode(shouldFreeze ? .paused(at: .progress(0.04)) : .playing(.toProgress(1, loopMode: .loop)))
+                    .frame(width: size, height: size)
+            } else {
                 // SF Symbol fallback with accent color
                 Image(systemName: sfSymbol)
                     .font(.system(size: size * 0.5))
                     .foregroundColor(accentColor)
                     .frame(width: size, height: size)
-            } else {
-                // Lottie animation
-                LottieView(animation: .named(lottieFile))
-                    .playbackMode(shouldFreeze ? .paused(at: .progress(0.04)) : .playing(.toProgress(1, loopMode: .loop)))
-                    .frame(width: size, height: size)
-                    .onAppear {
-                        if LottieAnimation.named(lottieFile) == nil {
-                            useFallback = true
-                        }
-                    }
             }
         }
-        .offset(y: isHovering ? -6 : 6)
-        .animation(
-            .easeInOut(duration: 1.8).repeatForever(autoreverses: true),
-            value: isHovering
-        )
+        .offset(y: isHovering ? -8 : 8)
         .onAppear {
-            isHovering = true
+            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
+                isHovering = true
+            }
         }
     }
 }

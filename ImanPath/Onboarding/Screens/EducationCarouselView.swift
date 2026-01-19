@@ -31,10 +31,11 @@ struct EducationCarouselView: View {
             description: "Porn **reduces** your hunger for a **real relationship** and replaces it with the hunger for more porn.",
             lottieFile: "heart_broken_animation",
             sfSymbolFallback: "heart.slash.fill",
-            backgroundColor: Color(hex: "DC2626")
+            backgroundColor: Color(hex: "DC2626"),
+            showBackdrop: true
         ),
         EducationSlide(
-            title: "Porn dims your iman",
+            title: "It disconnects you from Allah",
             description: "Porn doesn't just affect your mind. It numbs your **soul**. It makes **salah** feel harder, **du'a** feel distant, and **iman** feel low.",
             lottieFile: "faith_animation",
             sfSymbolFallback: "moon.stars.fill",
@@ -43,23 +44,24 @@ struct EducationCarouselView: View {
             quranReference: "Qur'an 70:29-30"
         ),
         EducationSlide(
-            title: "Allah sees, yet offers mercy",
-            description: "Even when no one sees, **Allah does**. Yet, He still offers you **mercy**, every time you turn back.",
-            lottieFile: "mercy_animation",
-            sfSymbolFallback: "eye.fill",
+            title: "It traps you in a cycle",
+            description: "**Temptation** leads to guilt. **Guilt** leads to shame. **Shame** pulls you right back in. Each time, it gets **harder to escape**.",
+            lottieFile: "cycle_animation",
+            sfSymbolFallback: "link",
             backgroundColor: Color(hex: "DC2626"),
-            quranVerse: "He knows the secret and what is even more hidden",
-            quranReference: "Qur'an 20:7"
+            emoji: "⛓️"
         )
     ]
 
-    // Hope slide (different color - our amber/green)
+    // Hope slide (different color - green for hope)
     private let hopeSlide = EducationSlide(
-        title: "There is a way out",
-        description: "Recovery is possible. By **abstaining from porn**, your brain can **reset its dopamine sensitivity**, leading to healthier relationships and **improved well-being**.",
+        title: "But you can break free",
+        description: "Allah's **mercy** awaits those who turn back. Your brain can **heal**, your relationships can **recover**, and your **iman** can be restored.",
         lottieFile: "plant_growing_animation",
         sfSymbolFallback: "leaf.fill",
-        backgroundColor: Color(hex: "065F46") // Dark green for hope
+        backgroundColor: Color(hex: "065F46"), // Dark green for hope
+        quranVerse: "Say: O My servants who have transgressed against themselves, do not despair of Allah's mercy",
+        quranReference: "Qur'an 39:53"
     )
 
     private var allSlides: [EducationSlide] {
@@ -103,7 +105,9 @@ struct EducationCarouselView: View {
                     LottieOrSymbolView(
                         lottieFile: currentSlideData.lottieFile,
                         sfSymbol: currentSlideData.sfSymbolFallback,
-                        size: 180
+                        size: 180,
+                        showBackdrop: currentSlideData.showBackdrop,
+                        emoji: currentSlideData.emoji
                     )
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
 
@@ -224,6 +228,8 @@ struct EducationSlide {
     let backgroundColor: Color
     var quranVerse: String? = nil
     var quranReference: String? = nil
+    var showBackdrop: Bool = false
+    var emoji: String? = nil  // If set, uses emoji instead of SF Symbol
 }
 
 // MARK: - Quran Verse Card (Islamic arch design)
@@ -275,34 +281,45 @@ struct LottieOrSymbolView: View {
     let lottieFile: String
     let sfSymbol: String
     let size: CGFloat
+    var showBackdrop: Bool = false
+    var emoji: String? = nil
 
-    @State private var useFallback: Bool = false
+    @State private var isFloating = false
 
     var body: some View {
         ZStack {
-            // Light backdrop circle for contrast
-            Circle()
-                .fill(Color.white.opacity(0.4))
-                .frame(width: size + 60, height: size + 60)
+            // Light backdrop circle for contrast (only when enabled)
+            if showBackdrop {
+                Circle()
+                    .fill(Color.white.opacity(0.4))
+                    .frame(width: size + 60, height: size + 60)
+            }
 
             Group {
-                if useFallback {
-                    // SF Symbol fallback
+                if LottieAnimation.named(lottieFile) != nil {
+                    // Lottie animation exists - show it
+                    LottieView(animation: .named(lottieFile))
+                        .playbackMode(.playing(.toProgress(1, loopMode: .playOnce)))
+                        .frame(width: size, height: size)
+                } else if let emoji = emoji {
+                    // Use emoji if provided - larger size with floating animation
+                    Text(emoji)
+                        .font(.system(size: size * 0.7))
+                        .offset(y: isFloating ? -6 : 6)
+                        .animation(
+                            .easeInOut(duration: 1.8).repeatForever(autoreverses: true),
+                            value: isFloating
+                        )
+                        .frame(width: size, height: size)
+                        .onAppear {
+                            isFloating = true
+                        }
+                } else {
+                    // No Lottie file - use SF Symbol fallback
                     Image(systemName: sfSymbol)
                         .font(.system(size: size * 0.6))
                         .foregroundColor(.white.opacity(0.9))
                         .frame(width: size, height: size)
-                } else {
-                    // Try Lottie animation
-                    LottieView(animation: .named(lottieFile))
-                        .playbackMode(.playing(.toProgress(1, loopMode: .loop)))
-                        .frame(width: size, height: size)
-                        .onAppear {
-                            // Check if animation exists, if not use fallback
-                            if LottieAnimation.named(lottieFile) == nil {
-                                useFallback = true
-                            }
-                        }
                 }
             }
         }

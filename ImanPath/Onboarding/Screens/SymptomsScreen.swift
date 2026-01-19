@@ -21,6 +21,14 @@ struct SymptomsScreen: View {
     private let cardBg = Color(hex: "1A2332")
     private let mutedText = Color(hex: "8A9BAE")
 
+    // Spiritual first - core differentiator for Islamic recovery app
+    private let spiritualSymptoms: [(id: String, text: String, boldWord: String)] = [
+        ("distant_allah", "Feeling distant from Allah", "distant"),
+        ("guilt_prayer", "Guilt or shame during prayer", "shame"),
+        ("avoiding_quran", "Avoiding the Quran", "Quran"),
+        ("empty_worship", "Worship feels empty", "empty")
+    ]
+
     private let mentalSymptoms: [(id: String, text: String, boldWord: String)] = [
         ("difficulty_concentrating", "Difficulty concentrating", "concentrating"),
         ("brain_fog", "Poor memory or 'brain fog'", "memory"),
@@ -29,11 +37,18 @@ struct SymptomsScreen: View {
         ("lack_ambition", "Lack of ambition to pursue goals", "ambition")
     ]
 
-    private let spiritualSymptoms: [(id: String, text: String, boldWord: String)] = [
-        ("distant_allah", "Feeling distant from Allah", "distant"),
-        ("guilt_prayer", "Guilt or shame during prayer", "shame"),
-        ("avoiding_quran", "Avoiding the Quran", "Quran"),
-        ("empty_worship", "Worship feels empty", "empty")
+    private let socialSymptoms: [(id: String, text: String, boldWord: String)] = [
+        ("withdrawing", "Withdrawing from family or friends", "Withdrawing"),
+        ("relationships", "Difficulty maintaining relationships", "relationships"),
+        ("isolated", "Feeling isolated or alone", "isolated"),
+        ("avoiding_social", "Avoiding social gatherings", "Avoiding")
+    ]
+
+    private let physicalSymptoms: [(id: String, text: String, boldWord: String)] = [
+        ("fatigue", "Fatigue or low energy", "Fatigue"),
+        ("sleep_issues", "Sleep problems or insomnia", "Sleep"),
+        ("neglecting_health", "Neglecting physical health", "Neglecting"),
+        ("restlessness", "Restlessness or tension", "Restlessness")
     ]
 
     var body: some View {
@@ -88,95 +103,115 @@ struct SymptomsScreen: View {
                         .opacity(showContent ? 1 : 0)
                         .animation(.easeOut(duration: 0.5).delay(0.3), value: showContent)
 
+                    // Spiritual symptoms section (first - core differentiator)
+                    symptomSection(
+                        title: "Spiritual",
+                        symptoms: spiritualSymptoms,
+                        baseDelay: 0.35
+                    )
+
                     // Mental symptoms section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Mental")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundColor(mutedText)
-                            .padding(.horizontal, 20)
+                    symptomSection(
+                        title: "Mental",
+                        symptoms: mentalSymptoms,
+                        baseDelay: 0.5
+                    )
 
-                        VStack(spacing: 10) {
-                            ForEach(Array(mentalSymptoms.enumerated()), id: \.element.id) { index, symptom in
-                                SymptomCard(
-                                    text: symptom.text,
-                                    boldWord: symptom.boldWord,
-                                    isSelected: selectedSymptoms.contains(symptom.id)
-                                ) {
-                                    triggerHaptic(.light)
-                                    if selectedSymptoms.contains(symptom.id) {
-                                        selectedSymptoms.remove(symptom.id)
-                                    } else {
-                                        selectedSymptoms.insert(symptom.id)
-                                    }
-                                }
-                                .opacity(showContent ? 1 : 0)
-                                .offset(y: showContent ? 0 : 15)
-                                .animation(.easeOut(duration: 0.4).delay(0.4 + Double(index) * 0.05), value: showContent)
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                    }
+                    // Social symptoms section
+                    symptomSection(
+                        title: "Social",
+                        symptoms: socialSymptoms,
+                        baseDelay: 0.65
+                    )
 
-                    // Spiritual symptoms section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Spiritual")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundColor(mutedText)
-                            .padding(.horizontal, 20)
-
-                        VStack(spacing: 10) {
-                            ForEach(Array(spiritualSymptoms.enumerated()), id: \.element.id) { index, symptom in
-                                SymptomCard(
-                                    text: symptom.text,
-                                    boldWord: symptom.boldWord,
-                                    isSelected: selectedSymptoms.contains(symptom.id)
-                                ) {
-                                    triggerHaptic(.light)
-                                    if selectedSymptoms.contains(symptom.id) {
-                                        selectedSymptoms.remove(symptom.id)
-                                    } else {
-                                        selectedSymptoms.insert(symptom.id)
-                                    }
-                                }
-                                .opacity(showContent ? 1 : 0)
-                                .offset(y: showContent ? 0 : 15)
-                                .animation(.easeOut(duration: 0.4).delay(0.65 + Double(index) * 0.05), value: showContent)
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                    }
+                    // Physical symptoms section
+                    symptomSection(
+                        title: "Physical",
+                        symptoms: physicalSymptoms,
+                        baseDelay: 0.8
+                    )
 
                     Spacer().frame(height: 100)
                 }
                 .padding(.top, 8)
             }
 
-            // Bottom button
+            // Bottom button with gradient background
             VStack(spacing: 0) {
+                // Gradient fade for visual anchoring
+                LinearGradient(
+                    colors: [
+                        Color(hex: "0A1628").opacity(0),
+                        Color(hex: "0A1628").opacity(0.8),
+                        Color(hex: "0A1628")
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 40)
+
                 Button(action: {
                     triggerHaptic(.medium)
                     onContinue(selectedSymptoms)
                 }) {
-                    Text("Reboot my brain")
+                    Text("Let's break the cycle")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(
                             RoundedRectangle(cornerRadius: 28)
-                                .fill(dangerRed)
+                                .fill(selectedSymptoms.isEmpty ? dangerRed.opacity(0.4) : dangerRed)
                         )
                 }
+                .disabled(selectedSymptoms.isEmpty)
+                .animation(.easeInOut(duration: 0.2), value: selectedSymptoms.isEmpty)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
+                .background(Color(hex: "0A1628"))
             }
             .opacity(showContent ? 1 : 0)
-            .animation(.easeOut(duration: 0.4).delay(0.8), value: showContent)
+            .animation(.easeOut(duration: 0.4).delay(1.0), value: showContent)
         }
         .onAppear {
             withAnimation {
                 showContent = true
             }
+        }
+    }
+
+    @ViewBuilder
+    private func symptomSection(
+        title: String,
+        symptoms: [(id: String, text: String, boldWord: String)],
+        baseDelay: Double
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(mutedText)
+                .padding(.horizontal, 20)
+
+            VStack(spacing: 10) {
+                ForEach(Array(symptoms.enumerated()), id: \.element.id) { index, symptom in
+                    SymptomCard(
+                        text: symptom.text,
+                        boldWord: symptom.boldWord,
+                        isSelected: selectedSymptoms.contains(symptom.id)
+                    ) {
+                        triggerHaptic(.light)
+                        if selectedSymptoms.contains(symptom.id) {
+                            selectedSymptoms.remove(symptom.id)
+                        } else {
+                            selectedSymptoms.insert(symptom.id)
+                        }
+                    }
+                    .opacity(showContent ? 1 : 0)
+                    .offset(y: showContent ? 0 : 15)
+                    .animation(.easeOut(duration: 0.4).delay(baseDelay + Double(index) * 0.05), value: showContent)
+                }
+            }
+            .padding(.horizontal, 20)
         }
     }
 
