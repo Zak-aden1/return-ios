@@ -214,6 +214,7 @@ struct ReturnApp: App {
 
 struct RootView: View {
     @EnvironmentObject var quickActionManager: QuickActionManager
+    @AppStorage("hasSeenPrepaywall") private var hasSeenPrepaywall: Bool = false
     @State private var showSplash = true
 
     var body: some View {
@@ -232,7 +233,10 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: $quickActionManager.showWinBackPaywall) {
             WinBackPaywallView(
+                source: .shortcutAction,
                 onPurchase: {
+                    // Mark onboarding as complete so user goes to tutorial, not onboarding
+                    hasSeenPrepaywall = true
                     quickActionManager.showWinBackPaywall = false
                     // Refresh quick actions to hide "Try for Free" now that user is subscribed
                     AppDelegate.refreshQuickActions()

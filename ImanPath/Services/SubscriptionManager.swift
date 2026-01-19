@@ -17,13 +17,22 @@ class SubscriptionManager: ObservableObject {
         case weekly = "week_5"
         case monthly = "month_10"
         case yearly = "yearly_50"
+        case trialYearly = "trail_yearly_40"    // Shortcut win-back: 3-day trial + $39.99/year
+        case noTrialYearly = "yearly_40"        // Transaction abandon win-back: $39.99/year, no trial
 
         var sortOrder: Int {
             switch self {
             case .weekly: return 0
             case .monthly: return 1
             case .yearly: return 2
+            case .trialYearly: return 3
+            case .noTrialYearly: return 4
             }
+        }
+
+        /// Products to show in main paywall (excludes win-back specific products)
+        static var mainPaywallProducts: [ProductID] {
+            [.weekly, .monthly, .yearly]
         }
     }
 

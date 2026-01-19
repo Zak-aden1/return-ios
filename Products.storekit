@@ -20,7 +20,7 @@
     "_applicationInternalID" : "6757953360",
     "_developerTeamID" : "TV94QM59B4",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 790354025.17782402,
+    "_lastSynchronizedDate" : 790541982.23856795,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [
@@ -86,6 +86,39 @@
           "codeOffers" : [
 
           ],
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 4,
+          "internalID" : "6757954849",
+          "introductoryOffer" : {
+            "internalID" : "9C41D81A",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "localizations" : [
+            {
+              "description" : "Yearly Subscription to Return With 3 day Free Trail",
+              "displayName" : "3 day Free Trail yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "trail_yearly_40",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "free trial yearly",
+          "subscriptionGroupID" : "21895551",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
           "displayPrice" : "9.99",
           "familyShareable" : false,
           "groupNumber" : 2,
@@ -129,6 +162,34 @@
           "productID" : "week_5",
           "recurringSubscriptionPeriod" : "P1W",
           "referenceName" : "Weekly 5",
+          "subscriptionGroupID" : "21895551",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 5,
+          "internalID" : "6758020601",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Yearly Subscription to Return",
+              "displayName" : "Yearly Access",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "yearly_40",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "yearly 40",
           "subscriptionGroupID" : "21895551",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

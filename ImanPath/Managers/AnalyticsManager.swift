@@ -97,7 +97,7 @@ class AnalyticsManager {
         Mixpanel.mainInstance().track(event: "ai_coach_used")
     }
 
-    // MARK: - Win-back Paywall
+    // MARK: - Win-back Paywall (Transaction Abandon)
 
     func trackWinbackPaywallViewed() {
         Mixpanel.mainInstance().track(event: "winback_paywall_viewed")
@@ -106,7 +106,20 @@ class AnalyticsManager {
     func trackWinbackPurchaseCompleted() {
         Mixpanel.mainInstance().track(
             event: "winback_purchase_completed",
-            properties: ["product_id": "yearly_50", "source": "winback_paywall"]
+            properties: ["product_id": "yearly_40", "source": "transaction_abandon"]
+        )
+    }
+
+    // MARK: - Shortcut Paywall (Quick Action)
+
+    func trackShortcutPaywallViewed() {
+        Mixpanel.mainInstance().track(event: "shortcut_paywall_viewed")
+    }
+
+    func trackShortcutPurchaseCompleted() {
+        Mixpanel.mainInstance().track(
+            event: "shortcut_purchase_completed",
+            properties: ["product_id": "trail_yearly_40", "source": "shortcut_action"]
         )
     }
 

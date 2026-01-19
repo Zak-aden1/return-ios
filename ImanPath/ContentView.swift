@@ -19,6 +19,7 @@ struct ContentView: View {
 
     // Track prepaywall -> paywall flow for returning non-subscribers
     @State private var showPaywallScreen: Bool = false
+    @State private var showWinBackPaywall: Bool = false
 
     private var dataManager: DataManager {
         DataManager(modelContext: modelContext)
@@ -60,8 +61,26 @@ struct ContentView: View {
                         onRestorePurchases: {
                             // Restore successful
                             // isSubscribed will update automatically via SubscriptionManager
+                        },
+                        onDismiss: {
+                            // Transaction abandon - show win-back paywall
+                            showWinBackPaywall = true
                         }
                     )
+                    .fullScreenCover(isPresented: $showWinBackPaywall) {
+                        WinBackPaywallView(
+                            source: .transactionAbandon,
+                            onPurchase: {
+                                // Successful purchase - subscription status auto-updates
+                                showWinBackPaywall = false
+                            },
+                            onDismiss: {
+                                // Dismissed win-back - go back to prepaywall
+                                showWinBackPaywall = false
+                                showPaywallScreen = false
+                            }
+                        )
+                    }
                 }
 
             } else if shouldShowTutorial {

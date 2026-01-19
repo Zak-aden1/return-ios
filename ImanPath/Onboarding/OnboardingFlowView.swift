@@ -400,6 +400,7 @@ struct OnboardingFlowView: View {
                     )
                     .fullScreenCover(isPresented: $showWinBackPaywall) {
                         WinBackPaywallView(
+                            source: .transactionAbandon,
                             onPurchase: {
                                 // Successful purchase from win-back
                                 showWinBackPaywall = false
