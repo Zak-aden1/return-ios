@@ -10,7 +10,7 @@ struct ChecklistSection: View {
     var onMyWhyTap: () -> Void = {}
 
     // Telegram community link
-    private let communityURL = "https://t.me/+OlG8JBruJMYxN2E0"
+    private let communityURL = "https://t.me/+jjOxY8c7g10zNjI0"
 
     @State private var notificationsEnabled = false
     @State private var communityJoined = false

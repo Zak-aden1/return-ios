@@ -17,7 +17,7 @@ struct TemptedFlowView: View {
     @State private var showDhikr: Bool = false
 
     // Telegram community link
-    private let communityURL = "https://t.me/+OlG8JBruJMYxN2E0"
+    private let communityURL = "https://t.me/+jjOxY8c7g10zNjI0"
 
     // Colors - calming blues/teals
     private let calmTeal = Color(hex: "5B9A9A")
