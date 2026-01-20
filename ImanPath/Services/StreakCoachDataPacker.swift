@@ -116,7 +116,7 @@ class StreakCoachDataPacker {
         lines.append("Local time: \(formatTime(Date())) (\(getTimeOfDay()))")
 
         let rateLimiter = CoachRateLimiter()
-        lines.append("Messages today: \(rateLimiter.getUsage().messagesCount)/100")
+        lines.append("Messages today: \(rateLimiter.getUsage().messagesCount)/30")
 
         return (lines.joined(separator: "\n"), citationMap)
     }

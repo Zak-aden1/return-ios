@@ -172,7 +172,7 @@ struct StreakCoachView: View {
                 .font(.system(size: 12))
                 .foregroundColor(isAtLimit ? Color(hex: "F59E0B") : Color(hex: "5EEAD4"))
 
-            Text(isAtLimit ? "Limit reached. Resets at midnight." : "\(usage.messagesCount)/100 messages today")
+            Text(isAtLimit ? "Limit reached. Resets at midnight." : "\(usage.messagesCount)/30 messages today")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundColor(isAtLimit ? Color(hex: "F59E0B") : Color(hex: "5EEAD4"))
         }
