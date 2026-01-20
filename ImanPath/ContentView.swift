@@ -14,8 +14,10 @@ struct ContentView: View {
     @Query private var users: [User]
     @StateObject private var subscriptionManager = SubscriptionManager.shared
 
-    // Track if user has completed onboarding up to prepaywall
-    @AppStorage("hasSeenPrepaywall") private var hasSeenPrepaywall: Bool = false
+    // Flash guard: hasExistingUser is synchronous, users (@Query) is async
+    // Prevents brief flash of OnboardingFlowView for returning users
+    @AppStorage("hasExistingUser") private var hasExistingUser: Bool = false
+    @State private var hasWaitedForUsers: Bool = false
 
     // Track prepaywall -> paywall flow for returning non-subscribers
     @State private var showPaywallScreen: Bool = false
@@ -34,11 +36,22 @@ struct ContentView: View {
         users.first?.userName ?? ""
     }
 
+    private var isOnboardingComplete: Bool {
+        users.first?.onboardingCompleted ?? false
+    }
+
     var body: some View {
         Group {
-            if !hasSeenPrepaywall {
-                // First time user - show full onboarding flow
-                // OnboardingFlowView will set hasSeenPrepaywall when reaching step 31
+            if hasExistingUser && users.isEmpty {
+                // Flash guard: returning user but SwiftData not loaded yet
+                // Prevents brief flash of OnboardingFlowView while @Query loads
+                if hasWaitedForUsers {
+                    OnboardingFlowView()
+                } else {
+                    Color(hex: "0A1628").ignoresSafeArea()
+                }
+            } else if !isOnboardingComplete {
+                // First time user or incomplete onboarding - show onboarding flow
                 OnboardingFlowView()
 
             } else if !subscriptionManager.isSubscribed {
@@ -95,7 +108,21 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: subscriptionManager.isSubscribed)
-        .animation(.easeInOut(duration: 0.3), value: hasSeenPrepaywall)
+        .animation(.easeInOut(duration: 0.3), value: isOnboardingComplete)
+        .task {
+            if !users.isEmpty && !hasExistingUser {
+                hasExistingUser = true
+            }
+            if !hasWaitedForUsers {
+                try? await Task.sleep(nanoseconds: 600_000_000)
+                hasWaitedForUsers = true
+            }
+        }
+        .onChange(of: users.count) { _, newCount in
+            if newCount > 0 && !hasExistingUser {
+                hasExistingUser = true
+            }
+        }
         .onChange(of: subscriptionManager.isSubscribed) { _, isSubscribed in
             // Reset paywall flow state when subscription status changes
             if isSubscribed {

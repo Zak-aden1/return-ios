@@ -213,9 +213,14 @@ struct ReturnApp: App {
 // MARK: - Root View (Splash -> Content)
 
 struct RootView: View {
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var quickActionManager: QuickActionManager
     @AppStorage("hasSeenPrepaywall") private var hasSeenPrepaywall: Bool = false
     @State private var showSplash = true
+
+    private var dataManager: DataManager {
+        DataManager(modelContext: modelContext)
+    }
 
     var body: some View {
         ZStack {
@@ -237,6 +242,7 @@ struct RootView: View {
                 onPurchase: {
                     // Mark onboarding as complete so user goes to tutorial, not onboarding
                     hasSeenPrepaywall = true
+                    dataManager.completeOnboarding()
                     quickActionManager.showWinBackPaywall = false
                     // Refresh quick actions to hide "Try for Free" now that user is subscribed
                     AppDelegate.refreshQuickActions()

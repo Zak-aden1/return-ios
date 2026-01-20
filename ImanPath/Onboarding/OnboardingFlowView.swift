@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 struct OnboardingFlowView: View {
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
 
     @State private var currentStep: Int = 1
     private let totalSteps = 30
@@ -362,12 +363,23 @@ struct OnboardingFlowView: View {
 
                 case 29:
                     // Pre-paywall benefits screen
-                    // Mark that user has seen prepaywall - they won't redo onboarding if they leave
                     PrePaywallScreen(
                         userName: userName,
-                        onContinue: { currentStep = 30 }
+                        onContinue: {
+                            // If already subscribed (sandbox/restored), skip paywall
+                            if subscriptionManager.isSubscribed {
+                                dataManager.completeOnboarding()
+                                if !didTrackOnboardingCompleted {
+                                    AnalyticsManager.shared.trackOnboardingCompleted()
+                                    didTrackOnboardingCompleted = true
+                                }
+                            } else {
+                                currentStep = 30
+                            }
+                        }
                     )
                     .onAppear {
+                        // Mark prepaywall seen for resume functionality
                         if !hasSeenPrepaywall {
                             hasSeenPrepaywall = true
                         }
@@ -455,7 +467,13 @@ struct OnboardingFlowView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: currentStep)
         .onAppear {
-            if !didTrackOnboardingStarted {
+            // Resume at prepaywall if user previously reached it but didn't complete onboarding
+            if hasSeenPrepaywall && currentStep == 1 {
+                // Resuming - load userName from SwiftData (since @State resets on view recreation)
+                userName = dataManager.getOrCreateUser().userName ?? ""
+                currentStep = 29
+            } else if !didTrackOnboardingStarted {
+                // Fresh start - track onboarding analytics (don't double-count on resume)
                 AnalyticsManager.shared.trackOnboardingStarted()
                 didTrackOnboardingStarted = true
             }
