@@ -84,12 +84,12 @@ struct PaywallScreen: View {
                             onDismiss()
                         }) {
                             Image(systemName: "xmark")
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(Color(hex: "9A8A9E"))
-                                .frame(width: 32, height: 32)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(Color(hex: "9A8A9E").opacity(0.7))
+                                .frame(width: 30, height: 30)
                                 .background(
                                     Circle()
-                                        .fill(Color(hex: "E8E0EC").opacity(0.9))
+                                        .fill(Color(hex: "E8E0EC").opacity(0.5))
                                 )
                         }
                         .padding(.trailing, 20)
