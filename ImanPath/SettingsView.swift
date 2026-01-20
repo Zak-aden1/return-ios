@@ -18,7 +18,6 @@ struct SettingsView: View {
     @State private var user: User?
     @State private var coachEnabled = true
     @State private var showClearChatAlert = false
-    @State private var showDeleteDataAlert = false
     @State private var showPermissionAlert = false
 
     private var isDay1Completed: Bool {
@@ -104,32 +103,6 @@ struct SettingsView: View {
                                 subtitle: "Delete all coach conversations"
                             ) {
                                 showClearChatAlert = true
-                            }
-                        }
-
-                        // Data Section
-                        SettingsSection(title: "DATA & PRIVACY") {
-                            SettingsButtonRow(
-                                icon: "square.and.arrow.up",
-                                iconColor: Color(hex: "60A5FA"),
-                                title: "Export My Data",
-                                subtitle: "Download all your data"
-                            ) {
-                                // TODO: Implement export
-                            }
-
-                            Divider()
-                                .background(Color(hex: "334155"))
-                                .padding(.horizontal, 16)
-
-                            SettingsButtonRow(
-                                icon: "trash.fill",
-                                iconColor: Color(hex: "EF4444"),
-                                title: "Delete All Data",
-                                subtitle: "Permanently remove everything",
-                                isDestructive: true
-                            ) {
-                                showDeleteDataAlert = true
                             }
                         }
 
@@ -231,14 +204,6 @@ struct SettingsView: View {
         } message: {
             Text("This will delete all your coach conversations. This cannot be undone.")
         }
-        .alert("Delete All Data?", isPresented: $showDeleteDataAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete Everything", role: .destructive) {
-                deleteAllData()
-            }
-        } message: {
-            Text("This will permanently delete all your data including journals, check-ins, and progress. This cannot be undone.")
-        }
     }
 
     // MARK: - Notification Types
@@ -294,11 +259,6 @@ struct SettingsView: View {
     private func clearChatHistory() {
         let dataManager = DataManager(modelContext: modelContext)
         dataManager.clearAllChatHistory()
-    }
-
-    private func deleteAllData() {
-        // TODO: Implement full data deletion
-        // This should delete all SwiftData entities
     }
 }
 
