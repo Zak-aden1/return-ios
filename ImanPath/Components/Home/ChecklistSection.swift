@@ -17,7 +17,9 @@ struct ChecklistSection: View {
     @State private var myWhySetUp = false
 
     private var notificationsEnabled: Bool {
-        notificationManager.isAuthorized
+        notificationManager.checkInReminderEnabled ||
+        notificationManager.lessonReminderEnabled ||
+        notificationManager.milestoneAlertsEnabled
     }
 
     private var completedCount: Int {
