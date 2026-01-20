@@ -24,6 +24,13 @@ struct SettingsView: View {
         lessonProgress.contains { $0.lessonDay == 1 }
     }
 
+    // Computed: notifications enabled if any type is on
+    private var notificationsEnabled: Bool {
+        notificationManager.checkInReminderEnabled ||
+        notificationManager.lessonReminderEnabled ||
+        notificationManager.milestoneAlertsEnabled
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -34,51 +41,18 @@ struct SettingsView: View {
                     VStack(spacing: 24) {
                         // Notifications Section
                         SettingsSection(title: "NOTIFICATIONS") {
-                            // Check-in Reminder
                             NotificationToggleRow(
-                                icon: "heart.text.square.fill",
-                                iconColor: Color(hex: "F59E0B"),
-                                title: "Check-in Reminder",
-                                subtitle: "Daily reminder to reflect",
+                                icon: "bell.fill",
+                                iconColor: Color(hex: "74B886"),
+                                title: "Notifications",
+                                subtitle: "Reminders, milestones & lessons",
                                 isOn: Binding(
-                                    get: { notificationManager.checkInReminderEnabled },
-                                    set: { handleNotificationToggle(type: .checkIn, enabled: $0) }
+                                    get: { notificationsEnabled },
+                                    set: { handleNotificationsToggle(enabled: $0) }
                                 ),
                                 time: $notificationManager.checkInTime,
-                                showTimePicker: notificationManager.checkInReminderEnabled,
+                                showTimePicker: notificationsEnabled,
                                 onTimeChange: { notificationManager.updateCheckInTime($0) }
-                            )
-
-                            Divider()
-                                .background(Color(hex: "334155"))
-                                .padding(.horizontal, 16)
-
-                            // Lesson Reminder
-                            SettingsToggleRow(
-                                icon: "book.fill",
-                                iconColor: Color(hex: "5B9A9A"),
-                                title: "Lesson Reminder",
-                                subtitle: "Notifies 24h after completing a lesson",
-                                isOn: Binding(
-                                    get: { notificationManager.lessonReminderEnabled },
-                                    set: { handleNotificationToggle(type: .lesson, enabled: $0) }
-                                )
-                            )
-
-                            Divider()
-                                .background(Color(hex: "334155"))
-                                .padding(.horizontal, 16)
-
-                            // Milestone Alerts
-                            SettingsToggleRow(
-                                icon: "star.fill",
-                                iconColor: Color(hex: "E8B86D"),
-                                title: "Milestone Alerts",
-                                subtitle: "Celebrate your achievements",
-                                isOn: Binding(
-                                    get: { notificationManager.milestoneAlertsEnabled },
-                                    set: { handleNotificationToggle(type: .milestone, enabled: $0) }
-                                )
                             )
                         }
 
@@ -206,40 +180,35 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Notification Types
-
-    private enum NotificationType {
-        case checkIn, lesson, milestone
-    }
-
     // MARK: - Notification Handling
 
-    private func handleNotificationToggle(type: NotificationType, enabled: Bool) {
-        // Check if we need to request permission
+    private func handleNotificationsToggle(enabled: Bool) {
         if enabled && !notificationManager.isAuthorized {
+            // Request permission first
             notificationManager.requestAuthorization { granted in
                 if granted {
-                    applyNotificationToggle(type: type, enabled: true)
+                    enableAllNotifications()
                 } else {
                     showPermissionAlert = true
                 }
             }
-        } else if enabled && notificationManager.isAuthorized {
-            applyNotificationToggle(type: type, enabled: true)
+        } else if enabled {
+            enableAllNotifications()
         } else {
-            applyNotificationToggle(type: type, enabled: false)
+            disableAllNotifications()
         }
     }
 
-    private func applyNotificationToggle(type: NotificationType, enabled: Bool) {
-        switch type {
-        case .checkIn:
-            notificationManager.toggleCheckInReminder(enabled)
-        case .lesson:
-            notificationManager.toggleLessonReminder(enabled, isDay1Completed: isDay1Completed)
-        case .milestone:
-            notificationManager.toggleMilestoneAlerts(enabled)
-        }
+    private func enableAllNotifications() {
+        notificationManager.toggleCheckInReminder(true)
+        notificationManager.toggleLessonReminder(true, isDay1Completed: isDay1Completed)
+        notificationManager.toggleMilestoneAlerts(true)
+    }
+
+    private func disableAllNotifications() {
+        notificationManager.toggleCheckInReminder(false)
+        notificationManager.toggleLessonReminder(false, isDay1Completed: isDay1Completed)
+        notificationManager.toggleMilestoneAlerts(false)
     }
 
     // MARK: - Data
