@@ -132,7 +132,7 @@ struct DependenceAnalysisScreen: View {
                     .opacity(showContent ? 1 : 0)
                     .animation(.easeOut(duration: 0.5).delay(0.5), value: showContent)
 
-                    Spacer().frame(height: 24)
+                    Spacer().frame(height: 12)
 
                     // Percentage higher callout - shows user's score as the "higher" number
                     HStack(spacing: 6) {

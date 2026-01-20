@@ -35,7 +35,7 @@ struct SolutionsCarouselView: View {
         // Slide 2: Victory promise (like Unchaind's trophy)
         SolutionSlide(
             title: "Finally Break the Cycle",
-            description: "The cycle of temptation, guilt, and shame ends here. Return helps you resist urges, stay accountable, and walk in **Allah's mercy**.",
+            description: "The cycle of temptation, guilt, and shame ends here. Return helps you resist urges, stay accountable, and seek **Allah's mercy**.",
             lottieFile: "trophy_animation",
             sfSymbolFallback: "trophy.fill",
             accentColor: Color(hex: "F59E0B") // Gold
