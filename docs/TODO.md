@@ -18,26 +18,27 @@
 | Subtitle | [x] | "Quit Porn with Iman" |
 | Promotional Text | [x] | Drafted (170 chars) |
 | Keywords | [x] | Drafted (100 chars) |
-| Screenshots | [ ] | Need 6.7" iPhone screenshots |
+| Screenshots | [x] | Created with device mockups |
 | Age Rating | [x] | Completed - 16+ (varies by country) |
 | Support URL | [x] | https://returntoiman.com/support |
-| Copyright | [ ] | Enter "2025 Return" in ASC |
+| Copyright | [x] | "2026 Return" |
 | Category | [x] | Health & Fitness |
 
 ## Before Submission
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Archive & Upload Build | [ ] | Xcode → Product → Archive → Distribute |
-| Verify Subscriptions | [ ] | Test purchase flow in sandbox |
-| Review App in TestFlight | [ ] | Final check before submission |
+| Archive & Upload Build | [x] | Uploaded to App Store Connect |
+| Verify Subscriptions | [ ] | Blocked - waiting on ASC business/tax agreements |
+| Review App in TestFlight | [~] | Partial - can't test past paywall until subscriptions enabled |
+| Submit for Review | [ ] | Ready once subscriptions verified |
 
 ## Already Complete
 
 - [x] Bundle ID registered
 - [x] App created in App Store Connect
 - [x] StoreKit 2 integration
-- [x] Subscription products (week_5, month_10, yearly_50)
+- [x] Subscription products (week_5, month_10, yearly_50, trail_yearly_40, yearly_40)
 - [x] Hard paywall flow
 - [x] Subscription expiry handling
 - [x] Launch screen (auto-generated)
@@ -46,16 +47,18 @@
 - [x] AI Coach streaming responses
 - [x] First-tap lag fix
 - [x] Website deployed (returntoiman.com)
+- [x] Win-back paywall (transaction abandon + shortcut action)
+- [x] Home screen quick actions
+- [x] Education carousel (4 pain + 1 hope structure)
+- [x] Commitment card hold-to-commit
 
 ---
 
 ## What's Left
 
-1. **Screenshots** - Create App Store screenshots with captions
-2. **Copyright** - Enter "2025 Return" in App Store Connect
-3. **Archive & Upload** - Build and upload to App Store Connect
-4. **Test in TestFlight** - Verify everything works
-5. **Submit for Review** - Final submission
+1. **Complete ASC business/tax setup** - Blocking subscription testing
+2. **Test full purchase flow** - Once subscriptions enabled
+3. **Submit for Review** - Final submission
 
 ## File References
 
@@ -63,6 +66,7 @@
 |------|---------|
 | `ImanPath/Assets.xcassets/AppIcon.appiconset/` | App icon |
 | `ImanPath/PrivacyInfo.xcprivacy` | Privacy manifest |
-| `ImanPath/Onboarding/Screens/PaywallScreen.swift` | Subscription paywall |
+| `ImanPath/Onboarding/Screens/PaywallScreen.swift` | Main subscription paywall |
+| `ImanPath/Views/Paywall/WinBackPaywallView.swift` | Win-back paywall (2 sources) |
 | `Products.storekit` | Local StoreKit testing |
 | `docs/SUBSCRIPTIONS.md` | Subscription documentation |
