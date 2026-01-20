@@ -56,30 +56,6 @@ struct SettingsView: View {
                             )
                         }
 
-                        // Coach Section
-                        SettingsSection(title: "COACH") {
-                            SettingsToggleRow(
-                                icon: "sparkles",
-                                iconColor: Color(hex: "74B886"),
-                                title: "AI Coach",
-                                subtitle: "Personalized guidance and support",
-                                isOn: $coachEnabled
-                            )
-
-                            Divider()
-                                .background(Color(hex: "334155"))
-                                .padding(.horizontal, 16)
-
-                            SettingsButtonRow(
-                                icon: "trash",
-                                iconColor: Color(hex: "64748B"),
-                                title: "Clear Chat History",
-                                subtitle: "Delete all coach conversations"
-                            ) {
-                                showClearChatAlert = true
-                            }
-                        }
-
                         // About Section
                         SettingsSection(title: "ABOUT") {
                             SettingsInfoRow(
