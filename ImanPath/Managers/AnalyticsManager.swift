@@ -7,6 +7,7 @@
 
 import Foundation
 import Mixpanel
+import UIKit
 
 class AnalyticsManager {
     static let shared = AnalyticsManager()
@@ -14,6 +15,12 @@ class AnalyticsManager {
     private init() {
         // Token from Secrets.xcconfig (hardcoded for now, can use Info.plist later)
         Mixpanel.initialize(token: "59acc25de88e8289e0e89c3ece14cc4b", trackAutomaticEvents: false)
+
+        // Use IDFV for consistent user identification across sessions
+        // This persists across reinstalls as long as at least one app from the vendor is installed
+        if let idfv = UIDevice.current.identifierForVendor?.uuidString {
+            Mixpanel.mainInstance().identify(distinctId: idfv)
+        }
     }
 
     // MARK: - Onboarding
