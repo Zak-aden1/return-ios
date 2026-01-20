@@ -2,6 +2,16 @@
 
 An Islamic app helping users overcome porn addiction through faith-based recovery, accountability, and mindfulness tools.
 
+---
+
+## Known Issues (v1.0.1)
+
+| Issue | File | Priority | Description |
+|-------|------|----------|-------------|
+| Relapse journal not saved | `RelapsedFlowView.swift:139` | Low | User writes reflection after relapse, but entry is not persisted. TODO comment marks the spot. |
+
+---
+
 ## Design System
 
 ### Color Palette
