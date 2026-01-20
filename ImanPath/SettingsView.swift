@@ -125,7 +125,9 @@ struct SettingsView: View {
                                 iconColor: Color(hex: "64748B"),
                                 title: "Send Feedback"
                             ) {
-                                // TODO: Open email
+                                if let url = URL(string: "mailto:support@returntoiman.com?subject=Return%20App%20Feedback") {
+                                    UIApplication.shared.open(url)
+                                }
                             }
                         }
 
