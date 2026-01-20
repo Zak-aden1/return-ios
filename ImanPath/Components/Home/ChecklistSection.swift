@@ -12,9 +12,13 @@ struct ChecklistSection: View {
     // Telegram community link
     private let communityURL = "https://t.me/+jjOxY8c7g10zNjI0"
 
-    @State private var notificationsEnabled = false
+    @StateObject private var notificationManager = NotificationManager.shared
     @State private var communityJoined = false
     @State private var myWhySetUp = false
+
+    private var notificationsEnabled: Bool {
+        notificationManager.isAuthorized
+    }
 
     private var completedCount: Int {
         [notificationsEnabled, communityJoined, myWhySetUp].filter { $0 }.count
@@ -59,10 +63,14 @@ struct ChecklistSection: View {
                         cta: "Tap to enable.",
                         isCompleted: notificationsEnabled
                     ) {
-                        withAnimation(.spring(response: 0.3)) {
-                            notificationsEnabled = true
+                        notificationManager.requestAuthorization { granted in
+                            if granted {
+                                // Enable all notification types when granted from checklist
+                                notificationManager.toggleCheckInReminder(true)
+                                notificationManager.toggleLessonReminder(true, isDay1Completed: false)
+                                notificationManager.toggleMilestoneAlerts(true)
+                            }
                         }
-                        // TODO: Actually request notification permission
                     }
 
                     Divider()
