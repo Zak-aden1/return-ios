@@ -219,6 +219,12 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showCheckIn) {
             CheckInFlowView()
         }
+        .onChange(of: showCheckIn) { oldValue, newValue in
+            if oldValue && !newValue {
+                // CheckIn was dismissed, reload stats to reflect completion
+                loadHomeStats()
+            }
+        }
         .navigationDestination(isPresented: $showJournal) {
             JournalView()
         }
