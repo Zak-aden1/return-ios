@@ -14,11 +14,11 @@ struct CoachUsage: Codable {
 }
 
 /// Manages local rate limiting for Streak Coach messages
-/// MVP implementation using UserDefaults - 100 messages per day
+/// MVP implementation using UserDefaults - 30 messages per day
 class CoachRateLimiter {
     private let userDefaults = UserDefaults.standard
     private let usageKey = "coach_usage"
-    private let dailyLimit = 100
+    private let dailyLimit = 30
 
     // MARK: - Public API
 
@@ -64,7 +64,7 @@ class CoachRateLimiter {
     /// Check if near the daily limit (for showing warning)
     func isNearLimit() -> Bool {
         let remaining = remainingMessages()
-        return remaining <= 10 && remaining > 0
+        return remaining <= 5 && remaining > 0
     }
 
     /// Check if at limit
