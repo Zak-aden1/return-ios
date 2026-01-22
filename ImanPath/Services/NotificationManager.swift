@@ -267,7 +267,7 @@ class NotificationManager: ObservableObject {
 
         checkInReminderEnabled = defaults.bool(forKey: "notification_checkin_enabled")
         lessonReminderEnabled = defaults.bool(forKey: "notification_lesson_enabled")
-        milestoneAlertsEnabled = defaults.object(forKey: "notification_milestone_enabled") as? Bool ?? false
+        milestoneAlertsEnabled = defaults.object(forKey: "notification_milestone_enabled") as? Bool ?? true
 
         if let checkInTimeInterval = defaults.object(forKey: "notification_checkin_time") as? TimeInterval {
             checkInTime = Date(timeIntervalSince1970: checkInTimeInterval)
