@@ -38,6 +38,9 @@ struct OnboardingFlowView: View {
     @State private var didTrackPaywallViewed: Bool = false
     @State private var didTrackOnboardingCompleted: Bool = false
 
+    // Feature flags
+    private let enableTransactionAbandon: Bool = false  // Disabled for App Store review - enable in future update
+
     // Win-back paywall for transaction abandon
     @State private var showWinBackPaywall: Bool = false
 
@@ -405,10 +408,10 @@ struct OnboardingFlowView: View {
                                 didTrackOnboardingCompleted = true
                             }
                         },
-                        onDismiss: {
+                        onDismiss: enableTransactionAbandon ? {
                             // Transaction abandon - show win-back paywall
                             showWinBackPaywall = true
-                        }
+                        } : nil
                     )
                     .fullScreenCover(isPresented: $showWinBackPaywall) {
                         WinBackPaywallView(
