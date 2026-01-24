@@ -15,7 +15,13 @@ struct RatingRequestScreen: View {
 
     @Environment(\.requestReview) private var requestReview
     @State private var showContent: Bool = false
-    @State private var hasRated: Bool = false
+    @State private var buttonStage: ButtonStage = .rate
+
+    private enum ButtonStage {
+        case rate
+        case thankYou
+        case continueButton
+    }
 
     // Colors - Fajr Dawn palette
     private let bgTop = Color(hex: "FDF8F5")
@@ -128,38 +134,41 @@ struct RatingRequestScreen: View {
 
                     Spacer().frame(height: 32)
 
-                    // Rate / Continue button (two-stage)
-                    Button(action: {
-                        triggerHaptic(.medium)
-
-                        if hasRated {
-                            // Second tap: advance to next screen
-                            onContinue()
-                        } else {
-                            // First tap: trigger rating, transform button
-                            requestReview()
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                hasRated = true
+                    // Three-stage rating button
+                    Button(action: handleButtonTap) {
+                        HStack(spacing: 10) {
+                            switch buttonStage {
+                            case .rate:
+                                Text("Rate the app")
+                                    .font(.system(size: 17, weight: .semibold))
+                                Image(systemName: "arrow.right")
+                                    .font(.system(size: 14, weight: .semibold))
+                            case .thankYou:
+                                Text("Thank you")
+                                    .font(.system(size: 17, weight: .semibold))
+                                Text("❤️")
+                                    .font(.system(size: 16))
+                            case .continueButton:
+                                Text("Continue")
+                                    .font(.system(size: 17, weight: .semibold))
+                                Image(systemName: "arrow.right")
+                                    .font(.system(size: 14, weight: .semibold))
                             }
                         }
-                    }) {
-                        HStack(spacing: 10) {
-                            Text(hasRated ? "Continue Your Journey" : "Rate the app")
-                                .font(.system(size: 17, weight: .semibold))
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 14, weight: .semibold))
-                        }
-                        .foregroundColor(hasRated ? .white : textHeading)
+                        .foregroundColor(buttonForegroundColor)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(
                             RoundedRectangle(cornerRadius: 28)
-                                .fill(hasRated ? accentViolet : cardBg)
-                                .shadow(color: accentViolet.opacity(hasRated ? 0.3 : 0.15), radius: 12, x: 0, y: 6)
+                                .fill(buttonBackgroundColor)
+                                .shadow(color: buttonShadowColor, radius: 12, x: 0, y: 6)
                         )
                     }
+                    .disabled(buttonStage == .thankYou)
                     .padding(.horizontal, 24)
                     .opacity(showContent ? 1 : 0)
+                    .allowsHitTesting(showContent && buttonStage != .thankYou)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.8), value: buttonStage)
                     .animation(.easeOut(duration: 0.4).delay(0.5), value: showContent)
 
                     Spacer().frame(height: 120)
@@ -176,6 +185,68 @@ struct RatingRequestScreen: View {
     private func triggerHaptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let generator = UIImpactFeedbackGenerator(style: style)
         generator.impactOccurred()
+    }
+
+    // MARK: - Button Styling
+
+    private var buttonForegroundColor: Color {
+        switch buttonStage {
+        case .rate:
+            return textHeading
+        case .thankYou:
+            return .white
+        case .continueButton:
+            return .white
+        }
+    }
+
+    private var buttonBackgroundColor: Color {
+        switch buttonStage {
+        case .rate:
+            return cardBg
+        case .thankYou:
+            return sunriseGlow
+        case .continueButton:
+            return accentViolet
+        }
+    }
+
+    private var buttonShadowColor: Color {
+        switch buttonStage {
+        case .rate:
+            return accentViolet.opacity(0.15)
+        case .thankYou:
+            return sunriseGlow.opacity(0.4)
+        case .continueButton:
+            return accentViolet.opacity(0.3)
+        }
+    }
+
+    // MARK: - Button Action
+
+    private func handleButtonTap() {
+        triggerHaptic(.medium)
+
+        switch buttonStage {
+        case .rate:
+            // Trigger rating prompt
+            requestReview()
+            // Transition to thank you state
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                buttonStage = .thankYou
+            }
+            // After 1 second, transition to continue
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    buttonStage = .continueButton
+                }
+            }
+        case .thankYou:
+            // Disabled state - do nothing
+            break
+        case .continueButton:
+            onContinue()
+        }
     }
 }
 
