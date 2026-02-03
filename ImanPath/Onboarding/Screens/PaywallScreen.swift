@@ -14,6 +14,7 @@ struct PaywallScreen: View {
     var onSubscribe: () -> Void
     var onRestorePurchases: () -> Void
     var onDismiss: (() -> Void)? = nil  // Optional - for transaction abandon flow
+    var closeButtonDelay: TimeInterval = 5.0
 
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     @State private var selectedProductID: String?
@@ -41,8 +42,9 @@ struct PaywallScreen: View {
     private let selectedBorder = Color(hex: "7B5E99")
     private let unselectedBorder = Color(hex: "E0D4E8")
 
-    // Badge color
-    private let badgeGreen = Color(hex: "10B981")
+    // Badge colors
+    private let badgeGreen = Color(hex: "43B75D") // Best value
+    private let badgePurple = Color(hex: "8361FF") // Popular
 
     var body: some View {
         ZStack {
@@ -241,6 +243,13 @@ struct PaywallScreen: View {
                     .disabled(isPurchasing || selectedProductID == nil)
                     .opacity(selectedProductID == nil ? 0.6 : 1)
 
+                    // Billed amount - clear and conspicuous (App Store 3.1.2 compliance)
+                    if !selectedBillingText.isEmpty {
+                        Text(selectedBillingText)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(textBody)
+                    }
+
                     // Bottom links
                     HStack(spacing: 8) {
                         Button(action: {
@@ -310,6 +319,7 @@ struct PaywallScreen: View {
             withAnimation {
                 showContent = true
             }
+
             // Select yearly by default
             if selectedProductID == nil, let yearlyProduct = subscriptionManager.product(for: .yearly) {
                 selectedProductID = yearlyProduct.id
@@ -318,11 +328,16 @@ struct PaywallScreen: View {
             AnalyticsManager.shared.trackPaywallViewed()
             AnalyticsManager.shared.flush()
 
-            // Show close button after 5 seconds (only if onDismiss is provided)
+            // Show close button after delay (only if onDismiss is provided)
             if onDismiss != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-                    withAnimation {
-                        showCloseButton = true
+                let delay = max(0, closeButtonDelay)
+                if delay == 0 {
+                    showCloseButton = true
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                        withAnimation {
+                            showCloseButton = true
+                        }
                     }
                 }
             }
@@ -575,22 +590,82 @@ struct PaywallScreen: View {
         }
     }
 
+    // MARK: - Localized Price Helpers
+
+    /// Formats a calculated price using the product's currency format
+    private func formatPrice(_ value: Decimal, for product: Product) -> String {
+        value.formatted(product.priceFormatStyle)
+    }
+
+    /// Gets the daily price string for a product (localized)
+    private func dailyPriceString(for product: Product) -> String {
+        let daily: Decimal
+        switch product.id {
+        case "yearly_50":
+            daily = product.price / 365
+        case "month_10":
+            daily = product.price / 30
+        case "week_5":
+            daily = product.price / 7
+        default:
+            daily = product.price
+        }
+        return "\(formatPrice(daily, for: product)) / day"
+    }
+
+    /// Gets the billing period string for display (localized amount)
+    private func billingPeriodString(for product: Product) -> String {
+        switch product.id {
+        case "yearly_50":
+            return "\(product.displayPrice) per year"
+        case "month_10":
+            return "\(product.displayPrice) per month"
+        case "week_5":
+            return "\(product.displayPrice) per week"
+        default:
+            return product.displayPrice
+        }
+    }
+
+    /// Gets the selected product for billing display
+    private var selectedProduct: Product? {
+        guard let id = selectedProductID else { return nil }
+        return subscriptionManager.products.first(where: { $0.id == id })
+    }
+
+    /// Gets the billing text for display below CTA (e.g., "Only $49.99 per year")
+    private var selectedBillingText: String {
+        guard let product = selectedProduct else { return "" }
+        switch product.id {
+        case "yearly_50":
+            return "Only \(product.displayPrice) per year"
+        case "month_10":
+            return "Only \(product.displayPrice) per month"
+        case "week_5":
+            return "Only \(product.displayPrice) per week"
+        default:
+            return "Only \(product.displayPrice)"
+        }
+    }
+
     @ViewBuilder
     private var pricingCardsRow: some View {
-        HStack(alignment: .bottom, spacing: 10) {
-            // Weekly - Left
+        HStack(alignment: .top, spacing: 10) {
+            // Weekly - Left (with "Popular" badge like Unchained)
             if let weekly = subscriptionManager.products.first(where: { $0.id == "week_5" }) {
                 CompactPricingCard(
                     product: weekly,
                     label: "Weekly",
-                    dailyPrice: "$0.71 / day",
-                    totalPrice: "$4.99 per week",
+                    dailyPrice: dailyPriceString(for: weekly),
+                    totalPrice: billingPeriodString(for: weekly),
                     isSelected: selectedProductID == weekly.id,
                     isHighlighted: false,
+                    badgeText: "Popular",
                     accentViolet: accentViolet,
                     sunriseGlow: sunriseGlow,
                     textHeading: textHeading,
-                    textMuted: textMuted
+                    textMuted: textMuted,
+                    badgeColor: badgePurple
                 ) {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                         selectedProductID = weekly.id
@@ -599,16 +674,16 @@ struct PaywallScreen: View {
                 }
             }
 
-            // Yearly - Center (Highlighted)
+            // Yearly - Center (Highlighted with "Best value" badge like Unchained)
             if let yearly = subscriptionManager.products.first(where: { $0.id == "yearly_50" }) {
                 CompactPricingCard(
                     product: yearly,
                     label: "Yearly",
-                    dailyPrice: "$0.14 / day",
-                    totalPrice: "$49.99 per year",
+                    dailyPrice: dailyPriceString(for: yearly),
+                    totalPrice: billingPeriodString(for: yearly),
                     isSelected: selectedProductID == yearly.id,
                     isHighlighted: true,
-                    badgeText: "Save 80%",
+                    badgeText: "Best value",
                     accentViolet: accentViolet,
                     sunriseGlow: sunriseGlow,
                     textHeading: textHeading,
@@ -627,8 +702,8 @@ struct PaywallScreen: View {
                 CompactPricingCard(
                     product: monthly,
                     label: "Monthly",
-                    dailyPrice: "$0.33 / day",
-                    totalPrice: "$9.99 per month",
+                    dailyPrice: dailyPriceString(for: monthly),
+                    totalPrice: billingPeriodString(for: monthly),
                     isSelected: selectedProductID == monthly.id,
                     isHighlighted: false,
                     accentViolet: accentViolet,
@@ -644,6 +719,7 @@ struct PaywallScreen: View {
             }
         }
         .padding(.horizontal, 16)
+        .padding(.top, 10) // Space for badge overflow
     }
 
     private func purchaseSelectedProduct() async {
@@ -882,7 +958,7 @@ private struct FAQItem: View {
     }
 }
 
-// MARK: - Compact Pricing Card (Horizontal Layout)
+// MARK: - Compact Pricing Card (Horizontal Layout - Unchained Style)
 private struct CompactPricingCard: View {
     let product: Product
     let label: String
@@ -898,70 +974,74 @@ private struct CompactPricingCard: View {
     var badgeColor: Color = Color(hex: "10B981")
     var onTap: () -> Void
 
-    private var cardHeight: CGFloat {
-        isHighlighted ? 120 : 115
+    // Slightly darker muted for better billed amount visibility (App Store 3.1.2 compliance)
+    private var billedAmountColor: Color {
+        Color(hex: "7A6A7E")
     }
+
+    // Uniform height for all cards - text alignment matters
+    private let cardHeight: CGFloat = 100
 
     var body: some View {
         Button(action: onTap) {
-            VStack(spacing: 4) {
-                // Badge (only for highlighted)
+            ZStack(alignment: .top) {
+                // Card content - identical layout for all cards
+                VStack(spacing: 8) {
+                    // Label
+                    Text(label)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(isSelected ? textHeading : textMuted)
+
+                    // Daily price - App Store 3.1.2 compliant ratio
+                    Text(dailyPrice)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundColor(textHeading)
+
+                    // Billed amount - prominent for App Store 3.1.2
+                    Text(totalPrice)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(billedAmountColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: cardHeight)
+                .background(
+                    ZStack {
+                        // Base card
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white)
+
+                        // Border - clean single stroke like Unchained
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(
+                                isSelected ? accentViolet : Color(hex: "E8E0EC"),
+                                lineWidth: isSelected ? 2.5 : 1
+                            )
+                    }
+                )
+                .shadow(
+                    color: isSelected ? accentViolet.opacity(0.15) : Color.black.opacity(0.04),
+                    radius: isSelected ? 8 : 4,
+                    x: 0,
+                    y: isSelected ? 3 : 2
+                )
+
+                // Badge - absolute positioned, overlapping top edge like Unchained
                 if let badge = badgeText {
                     Text(badge)
-                        .font(.system(size: 9, weight: .bold))
-                        .tracking(0.3)
+                        .font(.system(size: 11, weight: .bold))
                         .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                         .background(
                             Capsule()
                                 .fill(badgeColor)
                         )
-                } else if isHighlighted {
-                    // Spacer to maintain alignment
-                    Color.clear.frame(height: 20)
+                        .offset(y: -8) // Overlap card top edge like Unchained
                 }
-
-                // Label
-                Text(label)
-                    .font(.system(size: isHighlighted ? 14 : 12, weight: .semibold))
-                    .foregroundColor(isSelected ? textHeading : textMuted)
-
-                // Daily price (main price)
-                Text(dailyPrice)
-                    .font(.system(size: isHighlighted ? 18 : 15, weight: .bold, design: .rounded))
-                    .foregroundColor(textHeading)
-
-                // Total price
-                Text(totalPrice)
-                    .font(.system(size: 10))
-                    .foregroundColor(textMuted)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: cardHeight)
-            .background(
-                ZStack {
-                    // Base card
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.white)
-
-                    // Selected/Highlighted border
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(
-                            isSelected ? accentViolet : (isHighlighted ? sunriseGlow.opacity(0.5) : Color.clear),
-                            lineWidth: isSelected ? 2.5 : 1.5
-                        )
-                }
-            )
-            .shadow(
-                color: isHighlighted ? sunriseGlow.opacity(isSelected ? 0.35 : 0.2) : Color.black.opacity(0.04),
-                radius: isHighlighted ? 12 : 6,
-                x: 0,
-                y: isHighlighted ? 6 : 3
-            )
-            .scaleEffect(isSelected ? 1.03 : 1.0)
+            .scaleEffect(isSelected ? 1.02 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
     }

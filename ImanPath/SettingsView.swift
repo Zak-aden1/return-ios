@@ -7,18 +7,21 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
 import UIKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @StateObject private var notificationManager = NotificationManager.shared
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
     @Query private var lessonProgress: [LessonProgress]
 
     @State private var user: User?
     @State private var coachEnabled = true
     @State private var showClearChatAlert = false
     @State private var showPermissionAlert = false
+    @State private var showPaywall = false
 
     private var isDay1Completed: Bool {
         lessonProgress.contains { $0.lessonDay == 1 }
@@ -29,6 +32,40 @@ struct SettingsView: View {
         notificationManager.checkInReminderEnabled ||
         notificationManager.lessonReminderEnabled ||
         notificationManager.milestoneAlertsEnabled
+    }
+
+    // Computed: current subscription plan name
+    private var currentPlanName: String {
+        let subs = subscriptionManager.purchasedSubscriptions
+        if subs.contains(SubscriptionManager.ProductID.yearly.rawValue) ||
+           subs.contains(SubscriptionManager.ProductID.trialYearly.rawValue) ||
+           subs.contains(SubscriptionManager.ProductID.noTrialYearly.rawValue) {
+            return "Yearly"
+        } else if subs.contains(SubscriptionManager.ProductID.monthly.rawValue) {
+            return "Monthly"
+        } else if subs.contains(SubscriptionManager.ProductID.weekly.rawValue) {
+            return "Weekly"
+        }
+        return "None"
+    }
+
+    // Computed: icon for current plan
+    private var currentPlanIcon: String {
+        switch currentPlanName {
+        case "Yearly": return "crown.fill"
+        case "Monthly": return "star.fill"
+        case "Weekly": return "bolt.fill"
+        default: return "xmark.circle"
+        }
+    }
+
+    // Computed: show upgrade option if not on yearly
+    private var showUpgradeOption: Bool {
+        let subs = subscriptionManager.purchasedSubscriptions
+        let isOnYearly = subs.contains(SubscriptionManager.ProductID.yearly.rawValue) ||
+                         subs.contains(SubscriptionManager.ProductID.trialYearly.rawValue) ||
+                         subs.contains(SubscriptionManager.ProductID.noTrialYearly.rawValue)
+        return subscriptionManager.isSubscribed && !isOnYearly
     }
 
     var body: some View {
@@ -56,6 +93,25 @@ struct SettingsView: View {
                             )
                         }
 
+                        // Subscription Section
+                        SettingsSection(title: "SUBSCRIPTION") {
+                            SubscriptionPlanRow(
+                                planName: currentPlanName,
+                                planIcon: currentPlanIcon
+                            )
+
+                            // Show upgrade option if not on yearly plan
+                            if showUpgradeOption {
+                                Divider()
+                                    .background(Color(hex: "334155"))
+                                    .padding(.horizontal, 16)
+
+                                UpgradeRow {
+                                    showPaywall = true
+                                }
+                            }
+                        }
+
                         // About Section
                         SettingsSection(title: "ABOUT") {
                             SettingsInfoRow(
@@ -74,7 +130,7 @@ struct SettingsView: View {
                                 title: "Privacy Policy"
                             ) {
                                 if let url = URL(string: "https://returntoiman.com/privacy") {
-                                    UIApplication.shared.open(url)
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                                 }
                             }
 
@@ -88,7 +144,7 @@ struct SettingsView: View {
                                 title: "Terms of Service"
                             ) {
                                 if let url = URL(string: "https://returntoiman.com/terms") {
-                                    UIApplication.shared.open(url)
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                                 }
                             }
 
@@ -102,7 +158,7 @@ struct SettingsView: View {
                                 title: "Send Feedback"
                             ) {
                                 if let url = URL(string: "mailto:support@returntoiman.com?subject=Return%20App%20Feedback") {
-                                    UIApplication.shared.open(url)
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                                 }
                             }
                         }
@@ -131,6 +187,14 @@ struct SettingsView: View {
             .toolbarBackground(Color(hex: "0A1628"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
+        .fullScreenCover(isPresented: $showPaywall) {
+            PaywallScreen(
+                onSubscribe: {},
+                onRestorePurchases: {},
+                onDismiss: { showPaywall = false },
+                closeButtonDelay: 0
+            )
+        }
         .onAppear {
             loadSettings()
             notificationManager.checkAuthorizationStatus()
@@ -141,7 +205,7 @@ struct SettingsView: View {
         .alert("Enable Notifications", isPresented: $showPermissionAlert) {
             Button("Open Settings") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
             }
             Button("Cancel", role: .cancel) {}
@@ -450,6 +514,96 @@ struct SettingsInfoRow: View {
                 .foregroundColor(Color(hex: "64748B"))
         }
         .padding(16)
+    }
+}
+
+// MARK: - Subscription Plan Row
+
+struct SubscriptionPlanRow: View {
+    let planName: String
+    let planIcon: String
+
+    private var iconColor: Color {
+        switch planName {
+        case "Yearly": return Color(hex: "F6C177") // Gold
+        case "Monthly": return Color(hex: "7B5E99") // Purple
+        case "Weekly": return Color(hex: "60A5FA") // Blue
+        default: return Color(hex: "64748B")
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(iconColor.opacity(0.2))
+                    .frame(width: 36, height: 36)
+
+                Image(systemName: planIcon)
+                    .font(.system(size: 16))
+                    .foregroundColor(iconColor)
+            }
+
+            Text("Plan")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(.white)
+
+            Spacer()
+
+            Text(planName)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(iconColor)
+        }
+        .padding(16)
+    }
+}
+
+// MARK: - Upgrade Row
+
+struct UpgradeRow: View {
+    let action: () -> Void
+
+    private let accentGold = Color(hex: "F6C177")
+    private let accentGreen = Color(hex: "10B981")
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(
+                            LinearGradient(
+                                colors: [accentGold.opacity(0.3), accentGreen.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 36, height: 36)
+
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(accentGold)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Upgrade to Yearly")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(.white)
+
+                    Text("Best value • Save 80%")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(accentGreen)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(accentGold)
+            }
+            .padding(16)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
