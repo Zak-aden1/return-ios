@@ -168,9 +168,9 @@ struct TypewriterScreen: View {
         guard CHHapticEngine.capabilitiesForHardware().supportsHaptics,
               let engine = hapticEngine else { return }
 
-        // Subtle haptic for each character
-        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.3)
-        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.5)
+        // Stronger haptic for each character
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.6)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.7)
         let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
 
         do {
