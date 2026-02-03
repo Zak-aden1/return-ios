@@ -99,7 +99,7 @@ struct CommitmentJourneyView: View {
                 Spacer()
 
                 // Current progress
-                Text("\(progressPercent)% complete")
+                Text("\(progressPercent)% brain rewired")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(primaryGreen)
 
