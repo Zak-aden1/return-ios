@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import AVFoundation
 
 // MARK: - Quick Action Types
 
@@ -173,6 +174,12 @@ struct ReturnApp: App {
         // Initialize Mixpanel Analytics
         _ = AnalyticsManager.shared
         AnalyticsManager.shared.trackAppOpened()
+
+        // Pre-warm AVFoundation to avoid 6s dyld loading delay on first camera use (Panic button)
+        // This triggers framework loading during app launch instead of during UI presentation
+        DispatchQueue.global(qos: .utility).async {
+            _ = AVCaptureDevice.authorizationStatus(for: .video)
+        }
     }
 
     var body: some Scene {
