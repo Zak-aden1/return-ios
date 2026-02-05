@@ -592,36 +592,16 @@ struct PaywallScreen: View {
 
     // MARK: - Localized Price Helpers
 
-    /// Formats a calculated price using the product's currency format
-    private func formatPrice(_ value: Decimal, for product: Product) -> String {
-        value.formatted(product.priceFormatStyle)
-    }
-
-    /// Gets the daily price string for a product (localized)
-    private func dailyPriceString(for product: Product) -> String {
-        let daily: Decimal
+    /// Gets the billed price string for card display (e.g., "$4.99 / Week")
+    /// This is the ACTUAL billed amount - App Store 3.1.2 compliant
+    private func billedPriceString(for product: Product) -> String {
         switch product.id {
         case "yearly_50":
-            daily = product.price / 365
+            return "\(product.displayPrice) / Year"
         case "month_10":
-            daily = product.price / 30
+            return "\(product.displayPrice) / Month"
         case "week_5":
-            daily = product.price / 7
-        default:
-            daily = product.price
-        }
-        return "\(formatPrice(daily, for: product)) / day"
-    }
-
-    /// Gets the billing period string for display (localized amount)
-    private func billingPeriodString(for product: Product) -> String {
-        switch product.id {
-        case "yearly_50":
-            return "\(product.displayPrice) per year"
-        case "month_10":
-            return "\(product.displayPrice) per month"
-        case "week_5":
-            return "\(product.displayPrice) per week"
+            return "\(product.displayPrice) / Week"
         default:
             return product.displayPrice
         }
@@ -633,16 +613,16 @@ struct PaywallScreen: View {
         return subscriptionManager.products.first(where: { $0.id == id })
     }
 
-    /// Gets the billing text for display below CTA (e.g., "Only $49.99 per year")
+    /// Gets the billing text for display below CTA (e.g., "Only $49.99 every year")
     private var selectedBillingText: String {
         guard let product = selectedProduct else { return "" }
         switch product.id {
         case "yearly_50":
-            return "Only \(product.displayPrice) per year"
+            return "Only \(product.displayPrice) every year"
         case "month_10":
-            return "Only \(product.displayPrice) per month"
+            return "Only \(product.displayPrice) every month"
         case "week_5":
-            return "Only \(product.displayPrice) per week"
+            return "Only \(product.displayPrice) every week"
         default:
             return "Only \(product.displayPrice)"
         }
@@ -651,13 +631,12 @@ struct PaywallScreen: View {
     @ViewBuilder
     private var pricingCardsRow: some View {
         HStack(alignment: .top, spacing: 10) {
-            // Weekly - Left (with "Popular" badge like Unchained)
+            // Weekly - Left (with "Popular" badge)
             if let weekly = subscriptionManager.products.first(where: { $0.id == "week_5" }) {
                 CompactPricingCard(
                     product: weekly,
                     label: "Weekly",
-                    dailyPrice: dailyPriceString(for: weekly),
-                    totalPrice: billingPeriodString(for: weekly),
+                    billedPrice: billedPriceString(for: weekly),
                     isSelected: selectedProductID == weekly.id,
                     isHighlighted: false,
                     badgeText: "Popular",
@@ -674,13 +653,12 @@ struct PaywallScreen: View {
                 }
             }
 
-            // Yearly - Center (Highlighted with "Best value" badge like Unchained)
+            // Yearly - Center (with "Best value" badge)
             if let yearly = subscriptionManager.products.first(where: { $0.id == "yearly_50" }) {
                 CompactPricingCard(
                     product: yearly,
                     label: "Yearly",
-                    dailyPrice: dailyPriceString(for: yearly),
-                    totalPrice: billingPeriodString(for: yearly),
+                    billedPrice: billedPriceString(for: yearly),
                     isSelected: selectedProductID == yearly.id,
                     isHighlighted: true,
                     badgeText: "Best value",
@@ -702,8 +680,7 @@ struct PaywallScreen: View {
                 CompactPricingCard(
                     product: monthly,
                     label: "Monthly",
-                    dailyPrice: dailyPriceString(for: monthly),
-                    totalPrice: billingPeriodString(for: monthly),
+                    billedPrice: billedPriceString(for: monthly),
                     isSelected: selectedProductID == monthly.id,
                     isHighlighted: false,
                     accentViolet: accentViolet,
@@ -958,12 +935,11 @@ private struct FAQItem: View {
     }
 }
 
-// MARK: - Compact Pricing Card (Horizontal Layout - Unchained Style)
+// MARK: - Compact Pricing Card (App Store 3.1.2 Compliant - Billed Amount Only)
 private struct CompactPricingCard: View {
     let product: Product
     let label: String
-    let dailyPrice: String
-    let totalPrice: String
+    let billedPrice: String  // The actual billed amount - e.g., "$4.99 / week"
     let isSelected: Bool
     let isHighlighted: Bool
     var badgeText: String? = nil
@@ -974,33 +950,25 @@ private struct CompactPricingCard: View {
     var badgeColor: Color = Color(hex: "10B981")
     var onTap: () -> Void
 
-    // Slightly darker muted for better billed amount visibility (App Store 3.1.2 compliance)
-    private var billedAmountColor: Color {
-        Color(hex: "7A6A7E")
-    }
-
     // Uniform height for all cards - text alignment matters
-    private let cardHeight: CGFloat = 100
+    private let cardHeight: CGFloat = 90
 
     var body: some View {
         Button(action: onTap) {
             ZStack(alignment: .top) {
                 // Card content - identical layout for all cards
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     // Label
                     Text(label)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(isSelected ? textHeading : textMuted)
+                        .textCase(.uppercase)
+                        .tracking(0.5)
 
-                    // Daily price - App Store 3.1.2 compliant ratio
-                    Text(dailyPrice)
-                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                    // Billed amount - THE prominent price (App Store 3.1.2 compliant)
+                    Text(billedPrice)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
                         .foregroundColor(textHeading)
-
-                    // Billed amount - prominent for App Store 3.1.2
-                    Text(totalPrice)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(billedAmountColor)
                         .lineLimit(1)
                         .minimumScaleFactor(0.85)
                 }
