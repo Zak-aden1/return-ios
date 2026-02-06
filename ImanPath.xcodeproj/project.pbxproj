@@ -19,6 +19,7 @@
 		3128FCA12F1BD00D00A2194D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3128FCA02F1BD00D00A2194D /* StoreKit.framework */; };
 		3128FCA72F1BD86400A2194D /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 3128FCA62F1BD86400A2194D /* Products.storekit */; };
 		3128FD782F1DA90C00A2194D /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3128FD772F1DA90C00A2194D /* Secrets.xcconfig */; };
+		31C9FB132F366339005AD6A0 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 31C9FB122F366339005AD6A0 /* RevenueCat */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31C9FB132F366339005AD6A0 /* RevenueCat in Frameworks */,
 				312800202F1E9A9700A2194D /* Mixpanel in Frameworks */,
 				3128FC092F19BBB300A2194D /* Lottie in Frameworks */,
 				3128FCA12F1BD00D00A2194D /* StoreKit.framework in Frameworks */,
@@ -160,6 +162,7 @@
 			packageProductDependencies = (
 				3128FC082F19BBB300A2194D /* Lottie */,
 				3128001F2F1E9A9700A2194D /* Mixpanel */,
+				31C9FB122F366339005AD6A0 /* RevenueCat */,
 			);
 			productName = ImanPath;
 			productReference = 3128E4A52F10776C00C1ACD8 /* ImanPath.app */;
@@ -246,6 +249,7 @@
 			packageReferences = (
 				3128FC072F19BBB200A2194D /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				3128001E2F1E9A9700A2194D /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
+				31C9FB112F366339005AD6A0 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3128E4A62F10776C00C1ACD8 /* Products */;
@@ -686,6 +690,14 @@
 				minimumVersion = 4.6.0;
 			};
 		};
+		31C9FB112F366339005AD6A0 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.57.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -698,6 +710,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3128FC072F19BBB200A2194D /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		31C9FB122F366339005AD6A0 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 31C9FB112F366339005AD6A0 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

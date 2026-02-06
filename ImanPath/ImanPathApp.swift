@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import UIKit
 import AVFoundation
+import RevenueCat
 
 // MARK: - Quick Action Types
 
@@ -170,6 +171,9 @@ struct ReturnApp: App {
         } catch {
             fatalError("Failed to initialize SwiftData: \(error)")
         }
+
+        // Initialize RevenueCat
+        Purchases.configure(withAPIKey: "appl_XrUAsaZDsXzLHHIawzEBgCUyUZt")
 
         // Initialize Mixpanel Analytics
         _ = AnalyticsManager.shared
